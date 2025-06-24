@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Credenciais do Google e da API 
+/assets/credenciais-google.json 
+/lib/keys/keys.dart

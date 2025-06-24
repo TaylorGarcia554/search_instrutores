@@ -1,24 +1,29 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/components/resultadosSearch.dart';
+import 'package:search_instrutores/keys/keys.dart';
 import 'package:search_instrutores/main.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
-
-const String apiKey = ''; // chave da API
-const String spreadsheetId = '';
-
 
 class BuscaPlanilhaPage extends ConsumerStatefulWidget {
   const BuscaPlanilhaPage({super.key});
 
   @override
-  _BuscaPlanilhaPageState createState() => _BuscaPlanilhaPageState();
+  BuscaPlanilhaPageState createState() => BuscaPlanilhaPageState();
 }
 
-class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
+// final secrets = SecretKeysNotifier();
+
+class BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> resultados = [];
   List<String> sheetNames = [];
+
+  String spreadsheetId = SecretKeys.spreadsheetId;
+  String apiKey = SecretKeys.apiKey;
+  String? mesSelecionado;
 
   void _setAbas() {
     ref
@@ -26,17 +31,20 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
         .obterNomesDasAbas(spreadsheetId, apiKey)
         .then((value) {
       setState(() {
-        sheetNames = value;
+        sheetNames = value.reversed.take(30).toList();
+        if (sheetNames.isNotEmpty) {
+          mesSelecionado = sheetNames.first;
+        }
       });
     }).catchError((error) {
-      print('Erro ao obter nomes das abas: $error');
+      log('Erro ao obter nomes das abas: $error');
     });
   }
 
   @override
   void initState() {
     _setAbas();
-    
+
     super.initState();
   }
 
@@ -68,41 +76,85 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
           padding: EdgeInsets.all(16),
           child: Column(
             children: [
-              TextFormField(
-                controller: _controller,
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.search,
-                decoration: InputDecoration(
-                  // labelText: 'Cliente',
-                  hintText: 'Digite o Nome ou o Email',
-                  prefixIcon: Icon(Icons.search),
-                  labelStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontSize: 18),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 2.0,
+              Row(
+                children: [
+                  // Campo de busca ocupando o máximo de espaço
+                  Expanded(
+                    child: TextFormField(
+                      controller: _controller,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.search,
+                      decoration: InputDecoration(
+                        hintText: 'Digite o Nome ou o Email',
+                        prefixIcon: Icon(Icons.search),
+                        labelStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 18),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2.0,
+                          ),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1.0,
+                          ),
+                        ),
+                      ),
+                      cursorColor: Theme.of(context).colorScheme.primary,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira o Nome';
+                        }
+                        return null;
+                      },
                     ),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 1.0,
+
+                  const SizedBox(width: 12), // Espaço entre os dois campos
+
+                  // Dropdown com largura fixa
+                  SizedBox(
+                    width: 140,
+                    child: DropdownButtonFormField<String>(
+                      value: sheetNames.contains(mesSelecionado)
+                          ? mesSelecionado
+                          : null,
+                      hint: const Text("Mês"),
+                      items: sheetNames.map((mes) {
+                        return DropdownMenuItem<String>(
+                          value: mes,
+                          child: Text(mes),
+                        );
+                      }).toList(),
+                      onChanged: (value) async {
+                        log('Mes selecionado: $value');
+
+                        final buscarAtt = await ref
+                            .read(searchProvider.notifier)
+                            .buscarPorMes(value ?? '');
+
+                        // print(buscarAtt);
+
+                        setState(() {
+                          mesSelecionado = value;
+                          resultados = buscarAtt;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
                     ),
                   ),
-                ),
-                cursorColor: Theme.of(context).colorScheme.primary,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, insira o Nome';
-                  }
-                  return null;
-                },
+                ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Consumer(
                   builder: (context, ref, _) {
@@ -114,6 +166,8 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
                           ? null
                           : () async {
                               try {
+                                _setAbas();
+
                                 final abas = await provider.obterNomesDasAbas(
                                     spreadsheetId, apiKey);
                                 setState(() {
@@ -123,7 +177,7 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
                                 await provider.baixarEArmazenarDados(
                                     spreadsheetId, apiKey, sheetNames);
                               } catch (e) {
-                                print('Erro geral: $e');
+                                log('Erro geral: $e');
                               }
                               setState(() {});
                             },
@@ -150,11 +204,10 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-
                     final buscaratt = await ref
                         .read(searchProvider.notifier)
                         .buscarLocalmente(_controller.text);
-                    print(buscaratt);
+                    // print(buscaratt);
 
                     setState(() {
                       // formatarResultado(asyncResult);
@@ -171,7 +224,6 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
-
               ]),
               SizedBox(height: 24),
               Expanded(
@@ -180,6 +232,7 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
                 itemBuilder: (context, index) {
                   final item = resultados[index];
 
+                  final id = item['id'] ?? '';
                   final nome = item['nome'] ?? '';
                   final produto = item['produto'] ?? '';
                   final valor = item['valor'] ?? '';
@@ -187,6 +240,8 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
                   final telefone = item['telefone'] ?? '';
                   final data = item['dataPedido'] ?? '';
                   final sheet = item['sheet'] ?? '';
+                  final sheetID = item['sheetId'] ?? 0;
+                  final lembrado = item['lembrado'] ?? 0;
 
                   return Container(
                     margin: const EdgeInsets.only(bottom: 8),
@@ -209,13 +264,17 @@ class _BuscaPlanilhaPageState extends ConsumerState<BuscaPlanilhaPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ResultadosSearch(
-                              nome: nome,
-                              produto: produto,
-                              valor: valor,
-                              email: email,
-                              telefone: telefone,
-                              data: data,
-                              sheet: sheet)
+                            nome: nome,
+                            produto: produto,
+                            valor: valor,
+                            email: email,
+                            telefone: telefone,
+                            data: data,
+                            sheet: sheet,
+                            sheetID: sheetID,
+                            id: id,
+                            lembrado: lembrado,
+                          )
                         ],
                       ),
                     ),

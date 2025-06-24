@@ -34,6 +34,8 @@ void main() async {
 final themeProvider = StateProvider<bool>((ref) => false);
 
 class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeProvider);
