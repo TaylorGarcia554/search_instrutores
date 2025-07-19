@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/components/theme.dart';
+import 'package:search_instrutores/screen/home.dart';
 import 'package:search_instrutores/screen/searchPlanilha.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
@@ -21,7 +22,7 @@ void main() async {
     skipTaskbar: false,
     title: 'Combo Search',
     titleBarStyle: TitleBarStyle.normal,
-    minimumSize: const Size(400, 600),
+    minimumSize: const Size(900, 600),
   );
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
@@ -55,6 +56,7 @@ class Home extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return BuscaPlanilhaPage();
+    // return BuscaPlanilhaPage();
+    return HomeScreen();
   }
 }
