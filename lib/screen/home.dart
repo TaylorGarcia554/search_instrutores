@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/models/cliente.dart';
+import 'package:search_instrutores/models/sincronizarDadosApi.dart';
+import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/screen/home/cardValue.dart';
+import 'package:search_instrutores/screen/searchClients.dart';
 import 'package:search_instrutores/utils/buttons.dart';
 import 'package:search_instrutores/utils/cardClients.dart';
 import 'package:search_instrutores/utils/cor.dart';
@@ -92,11 +95,77 @@ class HomeScreen extends ConsumerWidget {
                       runSpacing:
                           size.height * 0.02, // espaçamento entre linhas
                       children: [
-                        ButtonsWidget('| Pesquisar', Icons.search, () {}),
+                        Hero(
+                          tag: 'pesquisar',
+                          child: ButtonsWidget(
+                              text: '| Pesquisar',
+                              icon: Icons.search,
+                              onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) =>
+                                //         SearchClientsScreen(), // Tela de pesquisa
+                                //   ),
+                                // );
+                          
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        SearchClientsScreen(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      final curvedAnimation = CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.easeInOut,
+                                      );
+                          
+                                      return ScaleTransition(
+                                        scale: curvedAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                    transitionDuration:
+                                        Duration(milliseconds: 300),
+                                  ),
+                                );
+                              }),
+                        ),
                         ButtonsWidget(
-                            '| Nova Venda', Icons.add_shopping_cart, () {}),
+                            text: '| Nova Venda',
+                            icon: Icons.add_shopping_cart,
+                            onPressed: () async {
+                              final buscaratt = await ref
+                                    .read(searchProvider.notifier)
+                                    .buscarComprasPorCliente(208);
+                              print(buscaratt);
+                            }),
                         ButtonsWidget(
-                            '| Novo Cliente', Icons.person_add, () {}),
+                            text: '| Novo Cliente',
+                            icon: Icons.person_add,
+                            onPressed: () async {
+                              //   final buscaratt = await ref
+                              //       .read(searchProvider.notifier)
+                              //       .buscarPorTermoNovo('Cfc');
+                              // print(buscaratt);
+
+                              // TODO: Na hora que fizer a tela de pesquisar, lembrar de colocar esta logica para funcionar
+                            }),
+                        ValueListenableBuilder<bool>(
+                          valueListenable: SincronizadorApiLocal.isLoading2,
+                          builder: (context, loading, child) {
+                            return ButtonsWidget(
+                              icon: Icons.sync,
+                              text: '| Atualizar Dados',
+                              isLoading: loading,
+                              onPressed: () {
+                                // chama a função de sincronização
+                                SincronizadorApiLocal.sincronizarTodosOsDados();
+                              },
+                            );
+                          },
+                        )
                       ],
                     ),
                   )

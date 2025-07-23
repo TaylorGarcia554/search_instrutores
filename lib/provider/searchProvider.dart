@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:search_instrutores/models/dbHelper.dart';
+import 'package:search_instrutores/models/dbHelperNew.dart';
 
 class SearchProvider extends ChangeNotifier {
   final String _searchQuery = '';
@@ -116,6 +117,21 @@ class SearchProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // -------------------------- API NOVA --------------------------
+
+  Future<List<Map<String, dynamic>>> buscarPorTermoNovo(String anoMes) async {
+    return await DBApiHelper.buscarPorTermoNovo(anoMes);
+  }
+
+  Future<List<Map<String, dynamic>>> buscarComprasPorCliente(
+      int clientId) async {
+    return await DBApiHelper.buscarComprasPorCliente(clientId);
+  }
+
+  Future<String> buscarProdutos(int clientId) async {
+    return await DBApiHelper.buscarProdutos(clientId);
   }
 }
 

@@ -46,6 +46,7 @@ class MyApp extends ConsumerWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+      // themeMode: ThemeMode.dark ,
       home: Home(),
     );
   }
