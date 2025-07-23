@@ -4,6 +4,7 @@ import 'package:search_instrutores/models/cliente.dart';
 import 'package:search_instrutores/models/sincronizarDadosApi.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/screen/home/cardValue.dart';
+import 'package:search_instrutores/screen/newClient.dart';
 import 'package:search_instrutores/screen/searchClients.dart';
 import 'package:search_instrutores/utils/buttons.dart';
 import 'package:search_instrutores/utils/cardClients.dart';
@@ -78,7 +79,7 @@ class HomeScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CardValue(), // This is the card that shows the value of sales and new clients
+                  const CardValue(), // This is the card that shows the value of sales and new clients
                   SizedBox(
                     height: size.height * 0.05,
                   ),
@@ -101,33 +102,25 @@ class HomeScreen extends ConsumerWidget {
                               text: '| Pesquisar',
                               icon: Icons.search,
                               onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) =>
-                                //         SearchClientsScreen(), // Tela de pesquisa
-                                //   ),
-                                // );
-                          
                                 Navigator.of(context).push(
                                   PageRouteBuilder(
                                     pageBuilder: (context, animation,
                                             secondaryAnimation) =>
-                                        SearchClientsScreen(),
+                                        const SearchClientsScreen(),
                                     transitionsBuilder: (context, animation,
                                         secondaryAnimation, child) {
                                       final curvedAnimation = CurvedAnimation(
                                         parent: animation,
                                         curve: Curves.easeInOut,
                                       );
-                          
+
                                       return ScaleTransition(
                                         scale: curvedAnimation,
                                         child: child,
                                       );
                                     },
                                     transitionDuration:
-                                        Duration(milliseconds: 300),
+                                        const Duration(milliseconds: 300),
                                   ),
                                 );
                               }),
@@ -137,21 +130,40 @@ class HomeScreen extends ConsumerWidget {
                             icon: Icons.add_shopping_cart,
                             onPressed: () async {
                               final buscaratt = await ref
-                                    .read(searchProvider.notifier)
-                                    .buscarComprasPorCliente(208);
+                                  .read(searchProvider.notifier)
+                                  .buscarComprasPorCliente(208);
                               print(buscaratt);
                             }),
-                        ButtonsWidget(
-                            text: '| Novo Cliente',
-                            icon: Icons.person_add,
-                            onPressed: () async {
-                              //   final buscaratt = await ref
-                              //       .read(searchProvider.notifier)
-                              //       .buscarPorTermoNovo('Cfc');
-                              // print(buscaratt);
-
-                              // TODO: Na hora que fizer a tela de pesquisar, lembrar de colocar esta logica para funcionar
-                            }),
+                        Hero(
+                          tag: 'novoCliente',
+                          child: ButtonsWidget(
+                              text: '| Novo Cliente',
+                              icon: Icons.person_add,
+                              onPressed: () async {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        const NewClient(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      final curvedAnimation = CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.easeInOut,
+                                      );
+                        
+                                      return ScaleTransition(
+                                        scale: curvedAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                    transitionDuration:
+                                        const Duration(milliseconds: 300),
+                                  ),
+                                );
+                        
+                              }),
+                        ),
                         ValueListenableBuilder<bool>(
                           valueListenable: SincronizadorApiLocal.isLoading2,
                           builder: (context, loading, child) {

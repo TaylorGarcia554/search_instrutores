@@ -13,6 +13,9 @@ class SearchProvider extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   bool get isLoading => _isLoading;
 
+  static const baseUrl =
+      'http://app.autoescolaonline.net/api'; // troque pela sua URL real
+
   Future<List<String>> obterNomesDasAbas(
       String spreadsheetId, String apiKey) async {
     final url =
@@ -133,6 +136,83 @@ class SearchProvider extends ChangeNotifier {
   Future<String> buscarProdutos(int clientId) async {
     return await DBApiHelper.buscarProdutos(clientId);
   }
+
+  Future<void> inserirCompras(Map<String, dynamic> compras) async {
+    await DBApiHelper.inserirCompras(compras);
+  }
+
+  Future<void> atualizarClientes(Map<String, dynamic> compras) async {
+    await DBApiHelper.atualizarClientes(compras);
+  }
+
+  Future<Map<String, dynamic>?> buscarCliente(int id) async {
+    final cliente = await DBApiHelper.buscarCliente(id);
+    if (cliente != null) {
+      log('Cliente encontrado: $cliente');
+      return cliente;
+    } else {
+      log('Cliente não encontrado com ID: $id');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>> inserirClientes(
+      Map<String, dynamic> cliente) async {
+    // TODO: VERIFICAR SE O CLIENTE JA EXISTE PRIMEIRO, ANTES DE JA SAIR SALVANDO NO BANCO DE DADOS
+    log('Inserindo cliente: $cliente');
+    final response = await http.post(
+      Uri.parse('$baseUrl/clientes'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(cliente),
+    );
+
+    if (response.statusCode == 201) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      log('Cliente inserido: $data');
+      // Atualiza o banco de dados local
+      await DBApiHelper.inserirCliente(data);
+      // Notifica os ouvintes sobre a mudança
+      data['status'] = 'success';
+      return data;
+    } else {
+      final Map<String, dynamic> data = json.decode(response.body);
+      data['status'] = 'error';
+      return data;
+    }
+  }
+
+  Future<Map<String, dynamic>> atualizarCliente(
+      Map<String, dynamic> cliente) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/clientes/${cliente['id']}'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(cliente),
+    );
+
+    log('Atualizando cliente: ${cliente['id']}');
+    log('Response: ${response.body}');
+    if (response.statusCode == 404) {
+      log('Cliente não encontrado: ${cliente['id']}');
+      return {'status': 'error', 'message': 'Cliente não encontrado'};
+    }
+
+    if (response.statusCode != 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      log('Erro ao atualizar cliente: ${data}');
+      data['status'] = 'error';
+      return data;
+    }
+
+    final Map<String, dynamic> data = json.decode(response.body);
+    // Atualiza o banco de dados local
+    await DBApiHelper.inserirCliente(data);
+
+    data['status'] = 'success';
+
+    return data;
+  }
+
+  // -------------------------- API NOVA --------------------------
 }
 
 Future<List<Map<String, dynamic>>> obterSheetIDComIds(

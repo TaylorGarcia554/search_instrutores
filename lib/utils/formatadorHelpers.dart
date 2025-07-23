@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:search_instrutores/utils/cor.dart';
 
 class Formatadorhelpers {
@@ -41,7 +43,8 @@ class Formatadorhelpers {
     if (data.isEmpty) return '';
 
     final partes = data.split('-');
-    if (partes.length != 3) return data; // Retorna a data original se não estiver no formato esperado
+    if (partes.length != 3)
+      return data; // Retorna a data original se não estiver no formato esperado
 
     final ano = partes[0].substring(2);
     final mes = partes[1].padLeft(2, '0');
@@ -49,6 +52,11 @@ class Formatadorhelpers {
 
     return '$dia/$mes/$ano';
   }
+
+  final telefoneFormatter = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
   Widget customField({
     required TextEditingController controller,
@@ -58,7 +66,33 @@ class Formatadorhelpers {
     required double fontSize,
     required bool filled,
     required int maxLines,
+    required Color colorEditing,
+    TextInputType? textInputType,
+    String? Function(String?)? validator, // <== aqui
   }) {
+    final int? labelMax;
+
+    switch (label) {
+      case 'CPF':
+        labelMax = 14;
+        break;
+      case 'Nome:':
+        labelMax = 60;
+        break;
+      case 'Telefone':
+        labelMax = null;
+        break;
+      case 'Email':
+        labelMax = 255;
+        break;
+      case 'Valor':
+        labelMax = null;
+        break;
+      default:
+        // Outros casos podem ser tratados aqui se necessário
+        labelMax = null;
+        break;
+    }
     return TextFormField(
       controller: controller,
       readOnly: !isEditing, // usa readOnly em vez de enabled
@@ -67,44 +101,61 @@ class Formatadorhelpers {
         color: textColor,
         fontSize: fontSize,
       ),
-      keyboardType: TextInputType.multiline,
+      maxLength: labelMax, // define o limite de caracteres
+      inputFormatters: [
+        if (label == 'Telefone') telefoneFormatter,
+        if (label == 'Valor')
+          FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+        if (label == 'CPF') FilteringTextInputFormatter.digitsOnly,
+      ],
+      keyboardType: textInputType,
       maxLines: maxLines, // permite altura dinâmica
       minLines: 1, // começa com uma linha
+      validator: validator,
       decoration: InputDecoration(
         labelText: label,
+        counterText: '',
         labelStyle: const TextStyle(color: Cor.texto),
-        contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         filled: filled,
-        fillColor: Color.fromARGB(255, 217, 217, 217),
-        border: filled
-            ? OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+        fillColor: const Color.fromARGB(255, 217, 217, 217),
+        border: label == 'Nome:'
+            ? const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.black, width: 1.5),
               )
-            : InputBorder.none,
-        enabledBorder: filled
-            ? OutlineInputBorder(
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.black, width: 1.5),
+              ),
+        enabledBorder: label == 'Nome:'
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 1.5),
+              )
+            : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(
-                    color: isEditing ? Colors.blue : Colors.black,
+                    color: isEditing ? colorEditing : Colors.black,
                     width: isEditing ? 2 : 1.5),
+              ),
+        disabledBorder: label == 'Nome:'
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 1.5),
               )
-            : InputBorder.none,
-        disabledBorder: filled
-            ? OutlineInputBorder(
+            : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Colors.black, width: 1.5),
+              ),
+        focusedBorder: label == 'Nome:'
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 1.5),
               )
-            : InputBorder.none,
-        focusedBorder: filled
-            ? OutlineInputBorder(
+            : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.black, width: 1.5),
-              )
-            : InputBorder.none,
+                borderSide: BorderSide(
+                    color: isEditing ? colorEditing : Colors.black, width: 1.5),
+              ),
       ),
     );
   }
-
-
 }

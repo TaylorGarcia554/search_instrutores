@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/components/theme.dart';
 import 'package:search_instrutores/screen/home.dart';
-import 'package:search_instrutores/screen/searchPlanilha.dart';
+// import 'package:search_instrutores/screen/searchPlanilha.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -16,7 +16,7 @@ void main() async {
   // Define o databaseFactory global
   databaseFactory = databaseFactoryFfi;
 
-  WindowOptions windowOptions = WindowOptions(
+  WindowOptions windowOptions = const WindowOptions(
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
@@ -29,7 +29,7 @@ void main() async {
     await windowManager.focus();
   });
 
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 final themeProvider = StateProvider<bool>((ref) => false);
@@ -47,7 +47,7 @@ class MyApp extends ConsumerWidget {
       darkTheme: darkTheme,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       // themeMode: ThemeMode.dark ,
-      home: Home(),
+      home: const Home(),
     );
   }
 }

@@ -136,6 +136,26 @@ class DBApiHelper {
     }
   }
 
+  static Future<void> atualizarClientes(Map<String, dynamic> clientes) async {
+    final db = await database;
+
+    final existing = await db.query(
+      'clientes',
+      where: 'id = ?',
+      whereArgs: [clientes['id']],
+    );
+    if (existing.isNotEmpty) {
+      await db.update(
+        'clientes',
+        clientes,
+        where: 'id = ?',
+        whereArgs: [clientes['id']],
+      );
+    } else {
+      log('Cliente com ID ${clientes['id']} não encontrado para atualização.');
+    }
+  }
+
   static Future<List<Map<String, dynamic>>> buscarPorTermoNovo(
       String termo) async {
     final db = await database;
@@ -173,6 +193,23 @@ class DBApiHelper {
     );
 
     return nome.isNotEmpty ? nome.first['nome'] as String : 'Produto não encontrado';
+  }
+
+  static Future<Map<String, dynamic>> buscarCliente(int id) {
+    return database.then((db) async {
+      final result = await db.query(
+        'clientes',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      if (result.isNotEmpty) {
+        return result.first;
+      } else {
+        log('Cliente não encontrado com ID: $id');
+        return {};
+      }
+    });
+
   }
 
 }

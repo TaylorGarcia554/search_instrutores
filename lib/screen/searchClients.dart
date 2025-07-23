@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:search_instrutores/components/resultadosSearch.dart';
 import 'package:search_instrutores/components/resultadosSearchNovo.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/screen/profileDetails.dart';
@@ -58,7 +57,7 @@ class _SearchClientsScreenState extends ConsumerState<SearchClientsScreen> {
         child: Scaffold(
           appBar: AppBar(
             leading: IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -82,14 +81,14 @@ class _SearchClientsScreenState extends ConsumerState<SearchClientsScreen> {
                         },
                         decoration: InputDecoration(
                           hintText: 'Digite o Nome ou o Email',
-                          prefixIcon: Icon(Icons.search),
+                          prefixIcon: const Icon(Icons.search),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     // Aqui pode voltar com o dropdown se quiser
                   ],
                 ),
