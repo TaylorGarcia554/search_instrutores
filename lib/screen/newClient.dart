@@ -55,6 +55,7 @@ class _NewClientState extends ConsumerState<NewClient> {
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
+            title: const Text('Novo Cliente'),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
@@ -91,7 +92,7 @@ class _NewClientState extends ConsumerState<NewClient> {
                           Flexible(
                             // width: size.width * 0.4,
                             child: SizedBox(
-                              width: size.width * 0.7,
+                              width: size.width * 0.6,
                               child: customField(
                                   controller: nomeController,
                                   label: 'Nome:',
@@ -144,7 +145,7 @@ class _NewClientState extends ConsumerState<NewClient> {
                                   } else {
                                     showCustomMessage(
                                       context,
-                                      'Erro ao tentar salvar o cliente',
+                                      status['message'],
                                       type: MessageType.error,
                                       duration: const Duration(seconds: 2),
                                     );

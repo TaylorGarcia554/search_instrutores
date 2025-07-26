@@ -4,6 +4,7 @@ enum MessageType { success, error, info, warning }
 
 OverlayEntry? _currentEntry;
 
+
 void showCustomMessage(
   BuildContext context,
   String message, {

@@ -156,9 +156,34 @@ class SearchProvider extends ChangeNotifier {
     }
   }
 
+
   Future<Map<String, dynamic>> inserirClientes(
       Map<String, dynamic> cliente) async {
-    // TODO: VERIFICAR SE O CLIENTE JA EXISTE PRIMEIRO, ANTES DE JA SAIR SALVANDO NO BANCO DE DADOS
+    final String email = cliente['email'];
+
+    // Verificar se já existe um cliente com este email
+    final verificaResponse = await http.get(
+      Uri.parse('$baseUrl/clientes/buscar/email?email=$email'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (verificaResponse.statusCode == 200) {
+      final Map<String, dynamic> clienteExistente =
+          json.decode(verificaResponse.body);
+      if (clienteExistente.isNotEmpty) {
+        return {
+          'status': 'error',
+          'message': 'Já existe um cliente cadastrado com este email.',
+        };
+      }
+    } else {
+      return {
+        'status': 'error',
+        'message': 'Erro ao verificar cliente existente.',
+      };
+    }
+
+    // Se não existir, continua com a inserção
     log('Inserindo cliente: $cliente');
     final response = await http.post(
       Uri.parse('$baseUrl/clientes'),
@@ -169,9 +194,7 @@ class SearchProvider extends ChangeNotifier {
     if (response.statusCode == 201) {
       final Map<String, dynamic> data = json.decode(response.body);
       log('Cliente inserido: $data');
-      // Atualiza o banco de dados local
       await DBApiHelper.inserirCliente(data);
-      // Notifica os ouvintes sobre a mudança
       data['status'] = 'success';
       return data;
     } else {
@@ -198,7 +221,6 @@ class SearchProvider extends ChangeNotifier {
 
     if (response.statusCode != 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      log('Erro ao atualizar cliente: ${data}');
       data['status'] = 'error';
       return data;
     }

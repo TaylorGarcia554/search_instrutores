@@ -365,64 +365,72 @@ class _ProfileDetailsState extends ConsumerState<ProfileDetails> {
                       return Slidable(
                         key: ValueKey('item_$id'),
                         dragStartBehavior: DragStartBehavior.start,
+                        startActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          closeThreshold: 0.9,
+                          extentRatio: 0.14,
+                          openThreshold: 0.1,
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                // Aqui você pode definir o que acontece ao clicar no botão
+                                print('Ação deslizada para editar o item: $id');
+                              },
+                              backgroundColor:
+                                  Cor.bordaBotao,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                              label: 'Editar',
+                            ),
+                          ],
+                        ),
                         endActionPane: ActionPane(
                           motion: const ScrollMotion(),
                           closeThreshold: 0.9,
                           extentRatio: 0.14,
                           openThreshold: 0.1,
                           children: [
-                            CustomSlidableAction(
-                              // onPressed: (_) => editarItem(),
-                              onPressed: (BuildContext context) {
-                                // Aqui você pode implementar a lógica de edição
-                                print('Editar item com ID: $id');
+                            SlidableAction(
+                              onPressed: (context) {
+                                // Aqui você pode definir o que acontece ao clicar no botão
+                                print(
+                                    'Ação deslizada para excluir o item: $id');
                               },
-                              child: Container(
-                                width: 110,
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.edit, color: Colors.white),
-                                    SizedBox(height: 9),
-                                    Text(
-                                      'Editar',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.error,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: 'Excluir',
                             ),
+                            
                           ],
                         ),
-                        child: Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color:
-                                Theme.of(context).colorScheme.surfaceContainer,
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.primary,
-                              width: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color:
+                                  Theme.of(context).colorScheme.surfaceContainer,
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 1,
+                              ),
                             ),
-                          ),
-                          child: ListTile(
-                            titleTextStyle: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            subtitle: ComprasPassadas(
-                              id: id,
-                              dataCompra: data,
-                              produto: produto,
-                              valor: valor,
-                              entrega: entrega,
-                              observacao: observacao,
+                            child: ListTile(
+                              titleTextStyle: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              subtitle: ComprasPassadas(
+                                id: id,
+                                dataCompra: data,
+                                produto: produto,
+                                valor: valor,
+                                entrega: entrega,
+                                observacao: observacao,
+                              ),
                             ),
                           ),
                         ),
