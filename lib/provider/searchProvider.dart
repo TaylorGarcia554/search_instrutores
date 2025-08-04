@@ -14,7 +14,7 @@ class SearchProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   static const baseUrl =
-      'http://app.autoescolaonline.net/api'; // troque pela sua URL real
+      'http://app.autoescolaonline.net/api';
 
   Future<List<String>> obterNomesDasAbas(
       String spreadsheetId, String apiKey) async {

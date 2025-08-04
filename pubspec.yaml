@@ -1,6 +1,6 @@
 name: search_instrutores
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -21,6 +21,8 @@ dependencies:
   sqflite: ^2.4.1
   sqflite_common_ffi: ^2.3.4+4
   window_manager: ^0.4.3
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -37,7 +39,7 @@ flutter_launcher_icons:
   macos:
     generate: true
     image_path: "assets/iconBusca.png"
-  windows: 
+  windows:
     generate: true
     image_path: "assets/iconBusca.png"
   image_path: "assets/iconBusca.png"

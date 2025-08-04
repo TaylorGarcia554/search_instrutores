@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/components/theme.dart';
 import 'package:search_instrutores/screen/home.dart';
@@ -43,6 +44,16 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      locale: const Locale('pt', 'BR'), // <- Aqui define o idioma desejado
+      supportedLocales: const [
+        Locale('pt', 'BR'), // Adicione o idioma desejado
+      ],
+      localizationsDelegates: const [
+        // Adicione os delegados de localização necessários
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,

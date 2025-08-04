@@ -5,6 +5,7 @@ import 'package:search_instrutores/models/sincronizarDadosApi.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/screen/home/cardValue.dart';
 import 'package:search_instrutores/screen/newClient.dart';
+import 'package:search_instrutores/screen/newSale.dart';
 import 'package:search_instrutores/screen/searchClients.dart';
 import 'package:search_instrutores/utils/buttons.dart';
 import 'package:search_instrutores/utils/cardClients.dart';
@@ -125,15 +126,35 @@ class HomeScreen extends ConsumerWidget {
                                 );
                               }),
                         ),
-                        ButtonsWidget(
-                            text: '| Nova Venda',
-                            icon: Icons.add_shopping_cart,
-                            onPressed: () async {
-                              final buscaratt = await ref
-                                  .read(searchProvider.notifier)
-                                  .buscarComprasPorCliente(208);
-                              print(buscaratt);
-                            }),
+                        Hero(
+                          tag: 'novaVenda',
+                          child: ButtonsWidget(
+                              text: '| Nova Venda',
+                              icon: Icons.add_shopping_cart,
+                              onPressed: () async {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        const NewSale(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      final curvedAnimation = CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.easeInOut,
+                                      );
+
+                                      return ScaleTransition(
+                                        scale: curvedAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                    transitionDuration:
+                                        const Duration(milliseconds: 300),
+                                  ),
+                                );
+                              }),
+                        ),
                         Hero(
                           tag: 'novoCliente',
                           child: ButtonsWidget(
@@ -151,7 +172,7 @@ class HomeScreen extends ConsumerWidget {
                                         parent: animation,
                                         curve: Curves.easeInOut,
                                       );
-                        
+
                                       return ScaleTransition(
                                         scale: curvedAnimation,
                                         child: child,
@@ -161,7 +182,6 @@ class HomeScreen extends ConsumerWidget {
                                         const Duration(milliseconds: 300),
                                   ),
                                 );
-                        
                               }),
                         ),
                         ValueListenableBuilder<bool>(

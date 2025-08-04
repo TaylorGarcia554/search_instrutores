@@ -60,6 +60,7 @@ class DBApiHelper {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         entrega TEXT,
         observacao TEXT,
+        pedido TEXT,
         FOREIGN KEY (client_id) REFERENCES clientes(id),  
         FOREIGN KEY (produto_id) REFERENCES produtos(id)
       )
