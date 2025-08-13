@@ -13,8 +13,7 @@ class SearchProvider extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   bool get isLoading => _isLoading;
 
-  static const baseUrl =
-      'http://app.autoescolaonline.net/api';
+  static const baseUrl = 'http://app.autoescolaonline.net/api';
 
   Future<List<String>> obterNomesDasAbas(
       String spreadsheetId, String apiKey) async {
@@ -156,7 +155,6 @@ class SearchProvider extends ChangeNotifier {
     }
   }
 
-
   Future<Map<String, dynamic>> inserirClientes(
       Map<String, dynamic> cliente) async {
     final String email = cliente['email'];
@@ -232,6 +230,99 @@ class SearchProvider extends ChangeNotifier {
     data['status'] = 'success';
 
     return data;
+  }
+
+  Future<Map<String, dynamic>> salvarVenda({
+    required int cliente,
+    required int produto,
+    required double valor,
+    required DateTime dataPedido,
+    required DateTime? dataEntrega,
+    required String? pagamentoId,
+    required String? entrega,
+    required String? pedido,
+    String? observacoes,
+    double? correios,
+  }) async {
+    final venda = {
+      'client_id': cliente,
+      'produto_id': produto,
+      'valor': valor.toStringAsFixed(2),
+      'correios': correios,
+      'pagamento_id': pagamentoId,
+      'entrega': entrega,
+      'pedido': pedido,
+      'data_pedido': dataPedido.toIso8601String(),
+      'data_postagem': dataEntrega?.toIso8601String(),
+      'observacao	': observacoes,
+    };
+
+    log('Salvando venda: $venda');
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/compras'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(venda),
+    );
+
+    if (response.statusCode == 201) {
+      log('Venda salva com sucesso');
+      // Aqui você pode atualizar o banco de dados local se necessário
+    } else {
+      log('Erro ao salvar venda: ${response.body}');
+      throw Exception('Erro ao salvar venda');
+    }
+
+    return json.decode(response.body);
+  }
+
+  Future<void> iniciarProcessodeVendas(
+    int vendaId,
+  ) async {
+    final processo = {
+      'compra_id': vendaId,
+      'estados_id': 1,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/compraprocessamento'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(processo),
+      );
+
+      if (response.statusCode == 201) {
+        log('Processamento iniciado com sucesso');
+        // Aqui você pode atualizar o banco de dados local se necessário
+      } else {
+        log('Erro ao iuniciar processo: ${response.body}');
+        throw Exception('Erro ao iniciar processo');
+      }
+    } catch (e) {
+      log('Erro ao iniciar processo de vendas: $e');
+    }
+  }
+
+  // Preciso fazer uma funcao que busque os clientes que estão com o processo de vendas iniciado
+  Future<List<Map<String, dynamic>>> buscarProcessosIniciados() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/compraprocessamento'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        log('Processos iniciados: $data');
+        return data.map((e) => e as Map<String, dynamic>).toList();
+      } else {
+        log('Erro ao buscar processos iniciados: ${response.body}');
+        throw Exception('Erro ao buscar processos iniciados');
+      }
+    } catch (e) {
+      log('Erro ao buscar processos iniciados: $e');
+      return [];
+    }
   }
 
   // -------------------------- API NOVA --------------------------

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/models/cliente.dart';
@@ -11,62 +13,47 @@ import 'package:search_instrutores/utils/buttons.dart';
 import 'package:search_instrutores/utils/cardClients.dart';
 import 'package:search_instrutores/utils/cor.dart';
 
-class HomeScreen extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final size = MediaQuery.of(context).size;
+class HomeScreen extends ConsumerStatefulWidget {
+  const HomeScreen({super.key});
 
-    final List<Cliente> listaDeClientes = [
-      Cliente(
-        nome: 'Flavio Junior ( CFC Abrantes )',
-        data: '02/07/2024',
-        telefone: '(33) 99988-9999',
-        diasRestantes: '5 Dias',
-      ),
-      Cliente(
-        nome: 'Maria Silva',
-        data: '15/07/2024',
-        telefone: '(33) 98877-1234',
-        diasRestantes: '10 Dias',
-      ),
-      Cliente(
-        nome: 'Flavio Junior ( CFC Abrantes )',
-        data: '02/07/2024',
-        telefone: '(33) 99988-9999',
-        diasRestantes: '5 Dias',
-      ),
-      Cliente(
-        nome: 'Maria Silva',
-        data: '15/07/2024',
-        telefone: '(33) 98877-1234',
-        diasRestantes: '10 Dias',
-      ),
-      Cliente(
-        nome: 'Flavio Junior ( CFC Abrantes )',
-        data: '02/07/2024',
-        telefone: '(33) 99988-9999',
-        diasRestantes: '5 Dias',
-      ),
-      Cliente(
-        nome: 'Maria Silva',
-        data: '15/07/2024',
-        telefone: '(33) 98877-1234',
-        diasRestantes: '10 Dias',
-      ),
-      Cliente(
-        nome: 'Flavio Junior ( CFC Abrantes )',
-        data: '02/07/2024',
-        telefone: '(33) 99988-9999',
-        diasRestantes: '5 Dias',
-      ),
-      Cliente(
-        nome: 'Maria Silva',
-        data: '15/07/2024',
-        telefone: '(33) 98877-1234',
-        diasRestantes: '10 Dias',
-      ),
-      // Adicione mais clientes aqui...
-    ];
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final List<CompraProcessamento> listaDeComprasProcessando = [];
+
+  @override
+  void initState() {
+    carregarProcessosIniciados();
+    super.initState();
+    // Adicione inicializações aqui se necessário
+  }
+
+  Future<void> carregarProcessosIniciados() async {
+    try {
+      // Busca os dados do provider
+      final dados = await ref.read(searchProvider).buscarProcessosIniciados();
+
+      // Converte para a lista de objetos
+      final lista = dados.map((e) => CompraProcessamento.fromJson(e)).toList();
+
+      // Atualiza a lista local
+      setState(() {
+        listaDeComprasProcessando
+          ..clear()
+          ..addAll(lista);
+      });
+
+      log('Lista processando: $listaDeComprasProcessando');
+    } catch (e) {
+      log('Erro ao carregar processos iniciados: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Cor.background,
@@ -150,7 +137,7 @@ class HomeScreen extends ConsumerWidget {
                                       );
                                     },
                                     transitionDuration:
-                                        const Duration(milliseconds: 300),
+                                        const Duration(milliseconds: 400),
                                   ),
                                 );
                               }),
@@ -223,7 +210,7 @@ class HomeScreen extends ConsumerWidget {
                       color: Colors.black.withAlpha(120),
                       spreadRadius: 2,
                       blurRadius: 8,
-                      offset: Offset(0, 4), // sombra para baixo
+                      offset: const Offset(0, 4), // sombra para baixo
                     ),
                   ],
                 ),
@@ -232,7 +219,7 @@ class HomeScreen extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
-                        'Instrutores vencendo o Prazo',
+                        'Aguardando Entrega',
                         style: TextStyle(
                           fontSize: size.width * 0.011,
                           color: Cor.texto,
@@ -242,13 +229,14 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     Expanded(
                       child: ListView.builder(
-                        padding: EdgeInsets.all(8),
-                        itemCount: listaDeClientes.length, // lista de dados
+                        padding: const EdgeInsets.all(8),
+                        itemCount:
+                            listaDeComprasProcessando.length, // lista de dados
                         itemBuilder: (context, index) {
                           return Padding(
-                            padding: EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             child: CardClients(
-                              cliente: listaDeClientes[
+                              cliente: listaDeComprasProcessando[
                                   index], // passe dados pro card
                             ),
                           );

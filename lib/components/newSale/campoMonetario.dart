@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class CampoMonetario extends StatefulWidget {
   final void Function(double) onChanged;
+  final String labelText;
 
-  const CampoMonetario({super.key, required this.onChanged});
+  const CampoMonetario(
+      {super.key, required this.onChanged, required this.labelText});
 
   @override
   State<CampoMonetario> createState() => _CampoMonetarioState();
@@ -42,9 +46,9 @@ class _CampoMonetarioState extends State<CampoMonetario> {
     return TextField(
       controller: _controller,
       keyboardType: TextInputType.number,
-      decoration: const InputDecoration(
-        labelText: 'Valor',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: widget.labelText,
+        border: const OutlineInputBorder(),
         prefixText: 'R\$ ',
       ),
       onChanged: _onChanged,

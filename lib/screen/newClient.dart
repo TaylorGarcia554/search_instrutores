@@ -171,7 +171,7 @@ class _NewClientState extends ConsumerState<NewClient> {
                               ),
                               child: const Text('Salvar',
                                   style: TextStyle(
-                                    fontSize: 10,
+                                    fontSize: 11,
                                     color: Colors.black,
                                   )),
                             ),

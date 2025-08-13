@@ -15,7 +15,9 @@ class Produto {
 }
 
 class DropdownProdutos extends StatefulWidget {
-  const DropdownProdutos({Key? key}) : super(key: key);
+  final void Function(Produto)? onProdutoSelecionado;
+
+  const DropdownProdutos({super.key, this.onProdutoSelecionado});
 
   @override
   State<DropdownProdutos> createState() => _DropdownProdutosState();
@@ -79,7 +81,7 @@ class _DropdownProdutosState extends State<DropdownProdutos> {
           child: Material(
             elevation: 4,
             child: ConstrainedBox(
-              constraints: BoxConstraints(
+              constraints: const BoxConstraints(
                 maxHeight: 200,
               ),
               child: ListView.builder(
@@ -94,6 +96,10 @@ class _DropdownProdutosState extends State<DropdownProdutos> {
                       setState(() {
                         _produtoSelecionado = produto;
                       });
+                      if (widget.onProdutoSelecionado != null) {
+                        widget.onProdutoSelecionado!(produto);
+                      }
+
                       _removeOverlay();
                     },
                   );
@@ -105,7 +111,7 @@ class _DropdownProdutosState extends State<DropdownProdutos> {
       ),
     );
 
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   void _removeOverlay() {
@@ -145,13 +151,13 @@ class _DropdownProdutosState extends State<DropdownProdutos> {
               Expanded(
                 child: Text(
                   _produtoSelecionado?.nome ?? 'Selecione um produto',
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
               if (_isLoading)
                 const SizedBox(
-                  width: 16,
-                  height: 16,
+                  width: 10,
+                  height: 10,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               else

@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:search_instrutores/components/statusProcessamento.dart';
 import 'package:search_instrutores/models/cliente.dart';
 import 'package:search_instrutores/utils/cor.dart';
-
+import 'package:search_instrutores/utils/formatadorHelpers.dart';
 
 class CardClients extends ConsumerWidget {
-  final Cliente cliente;
-  const CardClients({Key? key, required this.cliente}) : super(key: key);
+  final CompraProcessamento cliente;
+
+  const CardClients({super.key, required this.cliente});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
+
+    // Calcular os dias restantes
+    final DateTime dataCompra = DateTime.parse(cliente.data);
+    final DateTime dataAtual = DateTime.now();
+    final Duration diferenca = dataAtual.difference(dataCompra);
+    final int diasRestantes = diferenca.inDays;
+
+    final fomatador = Formatadorhelpers();
+
+    // Verifica se o status é 1 ou 2 para exibir o card
+    final int status = cliente.statusProcessamento;
+    StatusProcessamento? statusProcessamento =
+        StatusProcessamento.getPorId(status);
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -19,10 +34,10 @@ class CardClients extends ConsumerWidget {
       ),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 226, 132, 132),
+        color: statusProcessamento?.cor ?? Colors.white,
         borderRadius: BorderRadius.circular(7),
         border: Border.all(
-          color: const Color.fromARGB(255, 183, 0, 0),
+          color: statusProcessamento?.corBorda ?? Colors.black,
           width: 1.5,
         ),
       ),
@@ -38,9 +53,10 @@ class CardClients extends ConsumerWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Text(
-                cliente.data,
+                fomatador.formatData(cliente.data),
+                // cliente.data,
                 style: TextStyle(
                   fontSize: size.width * 0.01,
                   color: Cor.texto,
@@ -60,9 +76,9 @@ class CardClients extends ConsumerWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Text(
-                cliente.diasRestantes,
+                '$diasRestantes',
                 style: TextStyle(
                   fontSize: size.width * 0.01,
                   color: Cor.texto,

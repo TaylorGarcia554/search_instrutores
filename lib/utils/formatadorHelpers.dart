@@ -42,9 +42,11 @@ class Formatadorhelpers {
   String formatData(String data) {
     if (data.isEmpty) return '';
 
-    final partes = data.split('-');
-    if (partes.length != 3)
-      return data; // Retorna a data original se não estiver no formato esperado
+    // Pega só a parte antes do espaço (data)
+    final dataSomente = data.split(' ').first;
+
+    final partes = dataSomente.split('-');
+    if (partes.length != 3) return data;
 
     final ano = partes[0].substring(2);
     final mes = partes[1].padLeft(2, '0');
