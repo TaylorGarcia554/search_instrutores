@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/utils/formatadorHelpers.dart';
+import 'dart:math';
 
 class ComprasPassadas extends ConsumerWidget {
   final int id;
@@ -30,7 +30,7 @@ class ComprasPassadas extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
-    final double fontSize = size.width * 0.012;
+    final double fontSize = min(size.width * 0.012, 18);
 
     final format = Formatadorhelpers();
 
@@ -84,8 +84,7 @@ class ComprasPassadas extends ConsumerWidget {
                     } else {
                       return Center(
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 6.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
                           child: Text(
                             snapshot.data ?? 'Produto não encontrado',
                             style: TextStyle(

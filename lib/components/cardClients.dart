@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:search_instrutores/components/statusProcessamento.dart';
+import 'package:search_instrutores/utils/statusProcessamento.dart';
 import 'package:search_instrutores/models/cliente.dart';
 import 'package:search_instrutores/utils/cor.dart';
 import 'package:search_instrutores/utils/formatadorHelpers.dart';
@@ -78,7 +78,20 @@ class CardClients extends ConsumerWidget {
               ),
               const Spacer(),
               Text(
-                '$diasRestantes',
+                'Comprou a $diasRestantes dias',
+                style: TextStyle(
+                  fontSize: size.width * 0.01,
+                  color: Cor.texto,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: size.height * 0.01),
+          Row(
+            children: [
+              SelectableText(
+                cliente.email,
                 style: TextStyle(
                   fontSize: size.width * 0.01,
                   color: Cor.texto,

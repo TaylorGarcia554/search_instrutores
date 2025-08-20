@@ -16,23 +16,7 @@ class _SearchClientsScreenState extends ConsumerState<SearchClientsScreen> {
   final TextEditingController _controller = TextEditingController();
   List<Map<String, dynamic>> resultados = [];
 
-  // final meses = [
-  //   'Janeiro',
-  //   'Fevereiro',
-  //   'Março',
-  //   'Abril',
-  //   'Maio',
-  //   'Junho',
-  //   'Julho',
-  //   'Agosto',
-  //   'Setembro',
-  //   'Outubro',
-  //   'Novembro',
-  //   'Dezembro'
-  // ];
-
-  //  String mesSelecionado = meses[DateTime.now().month - 1];
-  // List<String> sheetNames = meses;
+  bool checkBox12meses = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +33,19 @@ class _SearchClientsScreenState extends ConsumerState<SearchClientsScreen> {
       });
 
       print("Buscando: $resposta");
+    }
+
+    void compradosHaMaisDe12Meses() async {
+      // lógica para buscar clientes que não compraram nos últimos 12 meses
+      final resposta = await ref
+          .read(searchProvider.notifier)
+          .buscarClientesSemComprasHaMaisDe12Meses();
+
+      setState(() {
+        resultados = resposta;
+      });
+
+      print("Clientes sem compras há mais de 12 meses: $resposta");
     }
 
     return Hero(
@@ -94,6 +91,112 @@ class _SearchClientsScreenState extends ConsumerState<SearchClientsScreen> {
                 ),
                 const SizedBox(height: 16),
 
+                ExpansionTile(
+                  title: const Text(
+                    'Filtros',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Data inicial',
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  onTap: () async {
+                                    final picked = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now()
+                                          .subtract(const Duration(days: 30)),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime.now(),
+                                    );
+                                    if (picked != null) {
+                                      // TODO: salvar picked em uma variável de estado (ex: dataInicial)
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: TextFormField(
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Data final',
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  onTap: () async {
+                                    final picked = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime.now(),
+                                    );
+                                    if (picked != null) {
+                                      // TODO: salvar picked em uma variável de estado (ex: dataFinal)
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // ✅ Filtro pré-definido: +12 meses sem compras
+                          CheckboxListTile(
+                            value:
+                                checkBox12meses, // trocar por variável de estado
+                            onChanged: (value) {
+                              setState(() {
+                                checkBox12meses =
+                                    value ?? false; // atualiza o estado
+                              });
+                              if (value == true) {
+                                // Se marcado, chamar a função que busca clientes sem compras há +12 meses
+                                compradosHaMaisDe12Meses();
+                              } else {
+                                // Se desmarcado, limpar os resultados ou aplicar outro filtro
+                                setState(() {
+                                  resultados = [];
+                                });
+                              }
+                              // TODO: se marcado, chamar o endpoint que retorna clientes sem compras há +12 meses
+                            },
+                            title: const Text(
+                                'Clientes há mais de 12 meses sem compras'),
+                            controlAffinity: ListTileControlAffinity.leading,
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // 🔎 Botão para aplicar filtros
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                // TODO: aplicar filtros
+                                // - Se datas selecionadas: enviar pro servidor
+                                // - Se checkbox true: usar a query especial
+                              },
+                              icon: const Icon(Icons.filter_alt),
+                              label: const Text("Aplicar filtros"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
                 // AQUI É A LISTA DE RESULTADOS
                 Expanded(
                   child: ListView.builder(
@@ -107,7 +210,7 @@ class _SearchClientsScreenState extends ConsumerState<SearchClientsScreen> {
                       final valor = item['valor'] ?? '';
                       final email = item['email'] ?? '';
                       final telefone = item['telefone'] ?? '';
-                      final observacao = item['observacao'] ?? '';  
+                      final observacao = item['observacao'] ?? '';
 
                       return InkWell(
                         onTap: () {

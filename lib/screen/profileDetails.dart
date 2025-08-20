@@ -96,9 +96,8 @@ class _ProfileDetailsState extends ConsumerState<ProfileDetails> {
           : formatador.formatCPFNumber(_clientes?['cpf'] ?? ''), // formatado
     );
 
-    ;
     final telefoneController = TextEditingController(
-        text: formatador.formatPhoneNumber(_clientes?['telefone']));
+        text: formatador.formatPhoneNumber(_clientes?['telefone'] ?? ''));
     final observacaoController =
         TextEditingController(text: _clientes?['observacao']);
 
@@ -362,75 +361,31 @@ class _ProfileDetailsState extends ConsumerState<ProfileDetails> {
                           compra['observacao'] ?? 'Sem observação';
                       final entrega = compra['entrega'] ?? '';
 
-                      return Slidable(
-                        key: ValueKey('item_$id'),
-                        dragStartBehavior: DragStartBehavior.start,
-                        startActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          closeThreshold: 0.9,
-                          extentRatio: 0.14,
-                          openThreshold: 0.1,
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                // Aqui você pode definir o que acontece ao clicar no botão
-                                print('Ação deslizada para editar o item: $id');
-                              },
-                              backgroundColor:
-                                  Cor.bordaBotao,
-                              foregroundColor: Colors.white,
-                              icon: Icons.edit,
-                              label: 'Editar',
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color:
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 1,
                             ),
-                          ],
-                        ),
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          closeThreshold: 0.9,
-                          extentRatio: 0.14,
-                          openThreshold: 0.1,
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                // Aqui você pode definir o que acontece ao clicar no botão
-                                print(
-                                    'Ação deslizada para excluir o item: $id');
-                              },
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.error,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Excluir',
+                          ),
+                          child: ListTile(
+                            titleTextStyle: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
-                            
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color:
-                                  Theme.of(context).colorScheme.surfaceContainer,
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 1,
-                              ),
-                            ),
-                            child: ListTile(
-                              titleTextStyle: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              subtitle: ComprasPassadas(
-                                id: id,
-                                dataCompra: data,
-                                produto: produto,
-                                valor: valor,
-                                entrega: entrega,
-                                observacao: observacao,
-                              ),
+                            subtitle: ComprasPassadas(
+                              id: id,
+                              dataCompra: data,
+                              produto: produto,
+                              valor: valor,
+                              entrega: entrega,
+                              observacao: observacao,
                             ),
                           ),
                         ),

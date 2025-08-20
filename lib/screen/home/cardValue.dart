@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/utils/cor.dart';
 
 class CardValue extends ConsumerWidget {
-  const CardValue({Key? key}) : super(key: key);
+  const CardValue({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
+
+    final valorTotal = ref.watch(vendasPorMesProvider);
+    final novosClientes = ref.watch(clientesNovosProvider);
+
+    print('Valor Total: $novosClientes');
 
     return Container(
         height: size.height * 0.15,
@@ -23,15 +29,13 @@ class CardValue extends ConsumerWidget {
               color: Colors.black.withAlpha(120),
               spreadRadius: 2,
               blurRadius: 8,
-              offset: Offset(0, 4), // sombra para baixo
+              offset: const Offset(0, 4), // sombra para baixo
             ),
           ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // TODO: lembrar de colocar esse valor dinamico.
-
             // This is to get a Value of sales made in the month
             Text.rich(
               TextSpan(
@@ -41,13 +45,40 @@ class CardValue extends ConsumerWidget {
                       color: Cor.texto,
                       fontWeight: FontWeight.bold),
                   children: [
-                    TextSpan(
-                      text: '\nR\$ 1.000,00',
-                      style: TextStyle(
+                    valorTotal.when(
+                      data: (valor) => TextSpan(
+                        text:
+                            '\nR\$ ${valor['total']?.toStringAsFixed(2) ?? '0.00'}',
+                        style: TextStyle(
                           fontSize: size.width * 0.02,
                           color: Cor.texto,
-                          fontWeight: FontWeight.bold),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      loading: () => TextSpan(
+                        text: '\nCarregando...',
+                        style: TextStyle(
+                          fontSize: size.width * 0.02,
+                          color: Cor.texto,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      error: (err, stack) => TextSpan(
+                        text: '\nErro',
+                        style: TextStyle(
+                          fontSize: size.width * 0.02,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
+                    // TextSpan(
+                    //   text: '\nR\$ 1.000,00',
+                    //   style: TextStyle(
+                    //       fontSize: size.width * 0.02,
+                    //       color: Cor.texto,
+                    //       fontWeight: FontWeight.bold),
+                    // ),
                   ]),
             ),
             // The size between the two containers
@@ -68,12 +99,31 @@ class CardValue extends ConsumerWidget {
                           color: Cor.texto,
                           fontWeight: FontWeight.bold),
                       children: [
-                        TextSpan(
-                          text: '\n10',
-                          style: TextStyle(
+                        novosClientes.when(
+                          data: (valor) => TextSpan(
+                            text: '\n ${valor['clientes_novos']}',
+                            style: TextStyle(
                               fontSize: size.width * 0.02,
                               color: Cor.texto,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          loading: () => TextSpan(
+                            text: '',
+                            style: TextStyle(
+                              fontSize: size.width * 0.02,
+                              color: Cor.texto,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          error: (err, stack) => TextSpan(
+                            text: '\nErro',
+                            style: TextStyle(
+                              fontSize: size.width * 0.02,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ]),
                 ),

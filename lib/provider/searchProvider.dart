@@ -156,23 +156,31 @@ class SearchProvider extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> inserirClientes(
-      Map<String, dynamic> cliente) async {
+    Map<String, dynamic> cliente,
+  ) async {
     final String email = cliente['email'];
 
-    // Verificar se já existe um cliente com este email
+    // 1️⃣ Verificar se já existe cliente com este email
     final verificaResponse = await http.get(
       Uri.parse('$baseUrl/clientes/buscar/email?email=$email'),
       headers: {'Content-Type': 'application/json'},
     );
 
     if (verificaResponse.statusCode == 200) {
-      final Map<String, dynamic> clienteExistente =
-          json.decode(verificaResponse.body);
-      if (clienteExistente.isNotEmpty) {
-        return {
-          'status': 'error',
-          'message': 'Já existe um cliente cadastrado com este email.',
-        };
+      if (verificaResponse.body.isNotEmpty) {
+        final decoded = json.decode(verificaResponse.body);
+
+        if (decoded is Map<String, dynamic> && decoded.isNotEmpty) {
+          return {
+            'status': 'error',
+            'message': 'Já existe um cliente cadastrado com este email.',
+          };
+        } else if (decoded is List && decoded.isNotEmpty) {
+          return {
+            'status': 'error',
+            'message': 'Já existe um cliente cadastrado com este email.',
+          };
+        }
       }
     } else {
       return {
@@ -181,7 +189,7 @@ class SearchProvider extends ChangeNotifier {
       };
     }
 
-    // Se não existir, continua com a inserção
+    // 2️⃣ Inserir cliente
     log('Inserindo cliente: $cliente');
     final response = await http.post(
       Uri.parse('$baseUrl/clientes'),
@@ -189,16 +197,40 @@ class SearchProvider extends ChangeNotifier {
       body: json.encode(cliente),
     );
 
+    // 3️⃣ Tratar respostas
     if (response.statusCode == 201) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      log('Cliente inserido: $data');
-      await DBApiHelper.inserirCliente(data);
-      data['status'] = 'success';
-      return data;
+      if (response.body.isEmpty) {
+        return {
+          'status': 'error',
+          'message': 'Servidor não retornou dados do cliente inserido.',
+        };
+      }
+
+      final decoded = json.decode(response.body);
+
+      if (decoded is Map<String, dynamic>) {
+        log('Cliente inserido: $decoded');
+        await DBApiHelper.inserirCliente(decoded);
+        decoded['status'] = 'success';
+        return decoded;
+      } else {
+        return {
+          'status': 'error',
+          'message': 'Formato inesperado na resposta do servidor.',
+        };
+      }
     } else {
-      final Map<String, dynamic> data = json.decode(response.body);
-      data['status'] = 'error';
-      return data;
+      if (response.body.isNotEmpty) {
+        final decoded = json.decode(response.body);
+        if (decoded is Map<String, dynamic>) {
+          decoded['status'] = 'error';
+          return decoded;
+        }
+      }
+      return {
+        'status': 'error',
+        'message': 'Falha ao inserir cliente.',
+      };
     }
   }
 
@@ -303,24 +335,102 @@ class SearchProvider extends ChangeNotifier {
     }
   }
 
-  // Preciso fazer uma funcao que busque os clientes que estão com o processo de vendas iniciado
-  Future<List<Map<String, dynamic>>> buscarProcessosIniciados() async {
+  // Funcao que busque os clientes que estão com o processo de vendas iniciado
+  Stream<List<Map<String, dynamic>>> buscarProcessosIniciadosStream(
+      Duration intervalo) async* {
+    while (true) {
+      try {
+        final response = await http.get(
+          Uri.parse('$baseUrl/compraprocessamento'),
+          headers: {'Content-Type': 'application/json'},
+        );
+
+        if (response.statusCode == 200) {
+          final List<dynamic> data = json.decode(response.body);
+          yield data.map((e) => e as Map<String, dynamic>).toList();
+        } else {
+          yield [];
+        }
+      } catch (e) {
+        yield [];
+      }
+
+      await Future.delayed(intervalo);
+    }
+  }
+
+  // Funcao que busque o valor total de vendas por mes
+  Future<Map<String, double>> buscarVendasPorMes() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/compraprocessamento'),
+        Uri.parse('$baseUrl/valortotal'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        log('Vendas por mês: $data');
+        return data.map((key, value) => MapEntry(key, value.toDouble()));
+      } else {
+        log('Erro ao buscar vendas por mês: ${response.body}');
+        throw Exception('Erro ao buscar vendas por mês');
+      }
+    } catch (e) {
+      log('Erro ao buscar vendas por mês: $e');
+      return {};
+    }
+  }
+
+  // funcao que busca aumento de clientes novos por mes
+  Future<Map<String, int>> buscarClientesNovosPorMes() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/clientesnovos'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        final Map<String, int> contagem = {};
+
+        data.forEach((chave, lista) {
+          if (lista is List) {
+            contagem[chave] = lista.length;
+          }
+        });
+
+        log('Contagem: $contagem');
+        return contagem;
+      } else {
+        log('Erro ao buscar clientes: ${response.body}');
+        throw Exception('Erro ao buscar clientes');
+      }
+    } catch (e) {
+      log('Erro ao buscar clientes: $e');
+      return {};
+    }
+  }
+
+  //funcao que busca os clientes que não compraram há mais de 12 meses
+  Future<List<Map<String, dynamic>>>
+      buscarClientesSemComprasHaMaisDe12Meses() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/clientespassados'),
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        log('Processos iniciados: $data');
+        log('Clientes sem compras há mais de 12 meses: $data');
         return data.map((e) => e as Map<String, dynamic>).toList();
       } else {
-        log('Erro ao buscar processos iniciados: ${response.body}');
-        throw Exception('Erro ao buscar processos iniciados');
+        log('Erro ao buscar clientes sem compras: ${response.body}');
+        throw Exception('Erro ao buscar clientes sem compras');
       }
     } catch (e) {
-      log('Erro ao buscar processos iniciados: $e');
+      log('Erro ao buscar clientes sem compras: $e');
       return [];
     }
   }
@@ -355,4 +465,13 @@ Future<List<Map<String, dynamic>>> obterSheetIDComIds(
 
 final searchProvider = ChangeNotifierProvider<SearchProvider>((ref) {
   return SearchProvider();
+});
+
+final vendasPorMesProvider = FutureProvider<Map<String, double>>((ref) {
+  final searchProv = ref.watch(searchProvider);
+  return searchProv.buscarVendasPorMes();
+});
+final clientesNovosProvider = FutureProvider<Map<String, int>>((ref) {
+  final searchProv = ref.watch(searchProvider);
+  return searchProv.buscarClientesNovosPorMes();
 });

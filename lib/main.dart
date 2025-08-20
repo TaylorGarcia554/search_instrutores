@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:search_instrutores/components/theme.dart';
+import 'package:search_instrutores/utils/theme.dart';
 import 'package:search_instrutores/screen/home.dart';
 // import 'package:search_instrutores/screen/searchPlanilha.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -23,7 +23,7 @@ void main() async {
     skipTaskbar: false,
     title: 'Combo Search',
     titleBarStyle: TitleBarStyle.normal,
-    minimumSize: const Size(900, 600),
+    minimumSize: Size(900, 600),
   );
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();

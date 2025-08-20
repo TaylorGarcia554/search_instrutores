@@ -9,8 +9,8 @@ import 'package:search_instrutores/screen/home/cardValue.dart';
 import 'package:search_instrutores/screen/newClient.dart';
 import 'package:search_instrutores/screen/newSale.dart';
 import 'package:search_instrutores/screen/searchClients.dart';
-import 'package:search_instrutores/utils/buttons.dart';
-import 'package:search_instrutores/utils/cardClients.dart';
+import 'package:search_instrutores/components/buttons.dart';
+import 'package:search_instrutores/components/cardClients.dart';
 import 'package:search_instrutores/utils/cor.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -25,30 +25,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void initState() {
-    carregarProcessosIniciados();
     super.initState();
     // Adicione inicializações aqui se necessário
-  }
-
-  Future<void> carregarProcessosIniciados() async {
-    try {
-      // Busca os dados do provider
-      final dados = await ref.read(searchProvider).buscarProcessosIniciados();
-
-      // Converte para a lista de objetos
-      final lista = dados.map((e) => CompraProcessamento.fromJson(e)).toList();
-
-      // Atualiza a lista local
-      setState(() {
-        listaDeComprasProcessando
-          ..clear()
-          ..addAll(lista);
-      });
-
-      log('Lista processando: $listaDeComprasProcessando');
-    } catch (e) {
-      log('Erro ao carregar processos iniciados: $e');
-    }
   }
 
   @override
@@ -227,18 +205,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                     ),
+                    // Expanded(
+                    //   child: ListView.builder(
+                    //     padding: const EdgeInsets.all(8),
+                    //     itemCount:
+                    //         listaDeComprasProcessando.length, // lista de dados
+                    //     itemBuilder: (context, index) {
+                    //       return Padding(
+                    //         padding: const EdgeInsets.symmetric(vertical: 6),
+                    //         child: CardClients(
+                    //           cliente: listaDeComprasProcessando[
+                    //               index], // passe dados pro card
+                    //         ),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),
                     Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        itemCount:
-                            listaDeComprasProcessando.length, // lista de dados
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            child: CardClients(
-                              cliente: listaDeComprasProcessando[
-                                  index], // passe dados pro card
-                            ),
+                      child: StreamBuilder<List<Map<String, dynamic>>>(
+                        stream: SearchProvider().buscarProcessosIniciadosStream(
+                            const Duration(seconds: 60)),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return const Center(
+                                child: Text('Erro ao carregar dados'));
+                          }
+
+                          final dados = snapshot.data ?? [];
+
+                          if (dados.isEmpty) {
+                            return const Center(
+                                child: Text('Nenhum processo iniciado'));
+                          }
+
+                          final listaDeComprasProcessando = dados
+                              .map((e) => CompraProcessamento.fromJson(e))
+                              .toList();
+
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(8),
+                            itemCount: listaDeComprasProcessando.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                child: CardClients(
+                                  cliente: listaDeComprasProcessando[index],
+                                ),
+                              );
+                            },
                           );
                         },
                       ),
