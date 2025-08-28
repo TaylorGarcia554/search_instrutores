@@ -81,9 +81,25 @@ class _NewSaleState extends ConsumerState<NewSale> {
       return;
     }
 
-    if (dataEntrega == null) {
-      ref.read(searchProvider.notifier).iniciarProcessodeVendas(resposta['id']);
-    }
+    ref.read(searchProvider.notifier).iniciarProcessodeVendas(
+          resposta['id'],
+          dataEntrega == null ? 1 : 3,
+          dataComeco: dataPedido,
+          dataEntraga: dataEntrega,
+        );
+
+    setState(() {
+      clienteSelecionado = null;
+      _produtoSelecionado = null;
+      dataPedido = null;
+      dataEntrega = null;
+      valorReal = 0.0;
+      valorCorreios = 0.0;
+      observacoes = '';
+    });
+
+    ref.invalidate(vendasPorMesProvider);
+    ref.invalidate(clientesNovosProvider);
 
     showCustomMessage(context, 'Venda salva com sucesso!',
         type: MessageType.success);
@@ -177,6 +193,8 @@ class _NewSaleState extends ConsumerState<NewSale> {
                                         dataInicial: dataEntrega,
                                         onChanged: (novaData) {
                                           dataEntrega = novaData;
+                                          print(
+                                              'Nova data de entrega: $dataEntrega');
                                         },
                                       ),
                                     ),
@@ -296,15 +314,15 @@ class _NewSaleState extends ConsumerState<NewSale> {
                                   child: ElevatedButton(
                                     onPressed: () async {
                                       _tentarSalvarVenda(context, ref);
-                                      setState(() {
-                                        clienteSelecionado = null;
-                                        _produtoSelecionado = null;
-                                        dataPedido = null;
-                                        dataEntrega = null;
-                                        valorReal = 0.0;
-                                        valorCorreios = 0.0;
-                                        observacoes = '';
-                                      });
+                                      // setState(() {
+                                      //   clienteSelecionado = null;
+                                      //   _produtoSelecionado = null;
+                                      //   dataPedido = null;
+                                      //   dataEntrega = null;
+                                      //   valorReal = 0.0;
+                                      //   valorCorreios = 0.0;
+                                      //   observacoes = '';
+                                      // });
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:

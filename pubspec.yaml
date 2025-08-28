@@ -23,6 +23,7 @@ dependencies:
   window_manager: ^0.4.3
   flutter_localizations:
     sdk: flutter
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/utils/cor.dart';
+import 'package:intl/intl.dart';
 
 class CardValue extends ConsumerWidget {
   const CardValue({super.key});
@@ -14,6 +15,11 @@ class CardValue extends ConsumerWidget {
     final novosClientes = ref.watch(clientesNovosProvider);
 
     print('Valor Total: $novosClientes');
+
+    final formatoMoeda = NumberFormat.currency(
+      locale: 'pt_BR',
+      symbol: 'R\$',
+    );
 
     return Container(
         height: size.height * 0.15,
@@ -39,7 +45,7 @@ class CardValue extends ConsumerWidget {
             // This is to get a Value of sales made in the month
             Text.rich(
               TextSpan(
-                  text: 'Total de Vendas Mensal',
+                  text: 'Total de Vendas Mensal\n',
                   style: TextStyle(
                       fontSize: size.width * 0.008,
                       color: Cor.texto,
@@ -48,7 +54,7 @@ class CardValue extends ConsumerWidget {
                     valorTotal.when(
                       data: (valor) => TextSpan(
                         text:
-                            '\nR\$ ${valor['total']?.toStringAsFixed(2) ?? '0.00'}',
+                            formatoMoeda.format(valor['total'] ?? 0),
                         style: TextStyle(
                           fontSize: size.width * 0.02,
                           color: Cor.texto,

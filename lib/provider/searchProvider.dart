@@ -123,13 +123,60 @@ class SearchProvider extends ChangeNotifier {
 
   // -------------------------- API NOVA --------------------------
 
-  Future<List<Map<String, dynamic>>> buscarPorTermoNovo(String anoMes) async {
-    return await DBApiHelper.buscarPorTermoNovo(anoMes);
+  Future<List<Map<String, dynamic>>> buscarPorTermoNovo(String filtro) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/clientes/buscar/email?email=$filtro'),
+      );
+
+      log('Buscando clientes com filtro: $filtro');
+      log('URL: ${response.request?.url}');
+      log('Status Code: ${response.statusCode}');
+      log('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final List data = jsonDecode(response.body);
+
+        // Aqui você decide se retorna objetos ou mapas
+        return data
+            .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e))
+            .toList();
+      } else {
+        log('Erro ao buscar clientes (status ${response.statusCode})');
+        return [];
+      }
+    } catch (e) {
+      log('Erro ao buscar clientes: $e');
+      return [];
+    }
   }
 
   Future<List<Map<String, dynamic>>> buscarComprasPorCliente(
-      int clientId) async {
-    return await DBApiHelper.buscarComprasPorCliente(clientId);
+      int clienteId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/cc/$clienteId'), // seu endpoint Laravel
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      log('Buscando compras do cliente $clienteId');
+      log('URL: ${response.request?.url}');
+      log('Status Code: ${response.statusCode}');
+      log('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final List data = jsonDecode(response.body);
+        return data
+            .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e))
+            .toList();
+      } else {
+        log('Erro ao buscar compras do cliente (status ${response.statusCode})');
+        return [];
+      }
+    } catch (e) {
+      log('Erro ao buscar compras do cliente: $e');
+      return [];
+    }
   }
 
   Future<String> buscarProdutos(int clientId) async {
@@ -308,12 +355,16 @@ class SearchProvider extends ChangeNotifier {
     return json.decode(response.body);
   }
 
-  Future<void> iniciarProcessodeVendas(
-    int vendaId,
-  ) async {
+  Future<void> iniciarProcessodeVendas(int vendaId, int status,
+      {DateTime? dataComeco, DateTime? dataEntraga}) async {
+    print(
+        'Iniciando processo de vendas para vendaId: $vendaId com status: $status');
+
     final processo = {
       'compra_id': vendaId,
-      'estados_id': 1,
+      'estados_id': status,
+      'data_comeco': dataComeco?.toIso8601String(),
+      'data_fim': dataEntraga?.toIso8601String(),
     };
 
     try {
@@ -382,32 +433,33 @@ class SearchProvider extends ChangeNotifier {
   }
 
   // funcao que busca aumento de clientes novos por mes
-  Future<Map<String, int>> buscarClientesNovosPorMes() async {
+  Future<Map<String, dynamic>> buscarClientesNovosPorMes() async {
+    // final stopwatch = Stopwatch()..start(); // Inicia o timer
+
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/clientesnovos'),
+        Uri.parse('$baseUrl/clientesnovos?tipo=total'),
         headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
 
-        final Map<String, int> contagem = {};
+        // stopwatch.stop(); // Para o timer
+        // log('Contagem: $data');
+        // log('Tempo de execução: ${stopwatch.elapsedMilliseconds} ms');
 
-        data.forEach((chave, lista) {
-          if (lista is List) {
-            contagem[chave] = lista.length;
-          }
-        });
-
-        log('Contagem: $contagem');
-        return contagem;
+        return data;
       } else {
+        // stopwatch.stop();
         log('Erro ao buscar clientes: ${response.body}');
+        // log('Tempo de execução (com erro): ${stopwatch.elapsedMilliseconds} ms');
         throw Exception('Erro ao buscar clientes');
       }
     } catch (e) {
+      // stopwatch.stop();
       log('Erro ao buscar clientes: $e');
+      // log('Tempo de execução (com exceção): ${stopwatch.elapsedMilliseconds} ms');
       return {};
     }
   }
@@ -467,11 +519,27 @@ final searchProvider = ChangeNotifierProvider<SearchProvider>((ref) {
   return SearchProvider();
 });
 
+// final vendasPorMesProvider = FutureProvider<Map<String, double>>((ref) {
+//   final searchProv = ref.watch(searchProvider);
+//   return searchProv.buscarVendasPorMes();
+// });
+// final clientesNovosProvider = FutureProvider<Map<String, int>>((ref) {
+//   final searchProv = ref.watch(searchProvider);
+//   return searchProv.buscarClientesNovosPorMes();
+// });
+
+final refreshTriggerProvider = StateProvider<int>((ref) => 0);
+
+// Vendas por mês depende do gatilho
 final vendasPorMesProvider = FutureProvider<Map<String, double>>((ref) {
+  final refresh = ref.watch(refreshTriggerProvider); // sempre que mudar, refaz
   final searchProv = ref.watch(searchProvider);
   return searchProv.buscarVendasPorMes();
 });
-final clientesNovosProvider = FutureProvider<Map<String, int>>((ref) {
+
+// Clientes novos por mês depende do gatilho
+final clientesNovosProvider = FutureProvider<Map<String, dynamic>>((ref) {
+  final refresh = ref.watch(refreshTriggerProvider);
   final searchProv = ref.watch(searchProvider);
   return searchProv.buscarClientesNovosPorMes();
 });

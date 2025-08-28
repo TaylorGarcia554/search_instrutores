@@ -45,12 +45,18 @@ class CardClients extends ConsumerWidget {
         children: [
           Row(
             children: [
-              SelectableText(
-                cliente.nome,
-                style: TextStyle(
-                  fontSize: size.width * 0.01,
-                  color: Cor.texto,
-                  fontWeight: FontWeight.bold,
+              Tooltip(
+                message:
+                    cliente.nome, // mostra o nome completo ao passar o mouse
+                child: SelectableText(
+                  cliente.nome.length > 40
+                      ? '${cliente.nome.substring(0, 20)}...'
+                      : cliente.nome,
+                  style: TextStyle(
+                    fontSize: size.width * 0.01,
+                    color: Cor.texto,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const Spacer(),

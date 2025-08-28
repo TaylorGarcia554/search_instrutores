@@ -15,20 +15,6 @@ class NewClient extends ConsumerStatefulWidget {
 }
 
 class _NewClientState extends ConsumerState<NewClient> {
-  Future<List<Map<String, dynamic>>> buscarComprasPassadas(
-      int clienteId) async {
-    final compras = await ref
-        .read(searchProvider.notifier)
-        .buscarComprasPorCliente(clienteId);
-    print('Compras encontradas: $compras');
-
-    if (compras.isEmpty) {
-      print('Nenhuma compra encontrada para o cliente com ID: $clienteId');
-      return [];
-    }
-    return compras;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -136,12 +122,22 @@ class _NewClientState extends ConsumerState<NewClient> {
                                       type: MessageType.success,
                                       duration: const Duration(seconds: 2),
                                     );
+
+                                    // Atualiza a lista de clientes
+                                    ref
+                                        .read(refreshTriggerProvider.notifier)
+                                        .state++;
+                                    ref.invalidate(vendasPorMesProvider);
+                                    ref.invalidate(clientesNovosProvider);
+
                                     // Limpa os campos após salvar
-                                    nomeController.clear();
-                                    emailController.clear();
-                                    cpfController.clear();
-                                    telefoneController.clear();
-                                    observacaoController.clear();
+                                    setState(() {
+                                      nomeController.clear();
+                                      emailController.clear();
+                                      cpfController.clear();
+                                      telefoneController.clear();
+                                      observacaoController.clear();
+                                    });
                                   } else {
                                     showCustomMessage(
                                       context,
@@ -150,13 +146,22 @@ class _NewClientState extends ConsumerState<NewClient> {
                                       duration: const Duration(seconds: 2),
                                     );
                                     // Limpa os campos após salvar
-                                    nomeController.clear();
-                                    emailController.clear();
-                                    cpfController.clear();
-                                    telefoneController.clear();
-                                    observacaoController.clear();
+                                    setState(() {
+                                      nomeController.clear();
+                                      emailController.clear();
+                                      cpfController.clear();
+                                      telefoneController.clear();
+                                      observacaoController.clear();
+                                    });
                                   }
                                 }
+
+                                ref
+                                    .read(refreshTriggerProvider.notifier)
+                                    .state++;
+                                ref.invalidate(vendasPorMesProvider);
+                                ref.invalidate(clientesNovosProvider);
+
                                 print('Editar pressionado');
                               },
                               style: ElevatedButton.styleFrom(
@@ -171,7 +176,7 @@ class _NewClientState extends ConsumerState<NewClient> {
                               ),
                               child: const Text('Salvar',
                                   style: TextStyle(
-                                    fontSize: 11,
+                                    fontSize: 10,
                                     color: Colors.black,
                                   )),
                             ),
@@ -192,18 +197,18 @@ class _NewClientState extends ConsumerState<NewClient> {
                                 textColor: Cor.texto,
                                 fontSize: size.width * 0.011,
                                 filled: true,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'CPF/CNPJ obrigatório';
-                                  }
-                                  final cleaned =
-                                      value.replaceAll(RegExp(r'\D'), '');
-                                  if (cleaned.length != 11 &&
-                                      cleaned.length != 14) {
-                                    return 'CPF ou CNPJ inválido';
-                                  }
-                                  return null;
-                                },
+                                // validator: (value) {
+                                //   if (value == null || value.isEmpty) {
+                                //     return 'CPF/CNPJ obrigatório';
+                                //   }
+                                //   final cleaned =
+                                //       value.replaceAll(RegExp(r'\D'), '');
+                                //   if (cleaned.length != 11 &&
+                                //       cleaned.length != 14) {
+                                //     return 'CPF ou CNPJ inválido';
+                                //   }
+                                //   return null;
+                                // },
                                 maxLines: 1),
                           ),
                           const SizedBox(width: 10),

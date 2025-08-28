@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/models/cliente.dart';
-import 'package:search_instrutores/models/sincronizarDadosApi.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/screen/home/cardValue.dart';
 import 'package:search_instrutores/screen/newClient.dart';
@@ -149,20 +146,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 );
                               }),
                         ),
-                        ValueListenableBuilder<bool>(
-                          valueListenable: SincronizadorApiLocal.isLoading2,
-                          builder: (context, loading, child) {
-                            return ButtonsWidget(
-                              icon: Icons.sync,
-                              text: '| Atualizar Dados',
-                              isLoading: loading,
-                              onPressed: () {
-                                // chama a função de sincronização
-                                SincronizadorApiLocal.sincronizarTodosOsDados();
-                              },
-                            );
-                          },
-                        )
                       ],
                     ),
                   )
@@ -240,7 +223,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                           if (dados.isEmpty) {
                             return const Center(
-                                child: Text('Nenhum processo iniciado'));
+                                child: Text('Todas vendas entregues!'));
                           }
 
                           final listaDeComprasProcessando = dados

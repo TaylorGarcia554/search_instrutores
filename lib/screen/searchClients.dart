@@ -169,7 +169,7 @@ class _SearchClientsScreenState extends ConsumerState<SearchClientsScreen> {
                                   resultados = [];
                                 });
                               }
-                              // TODO: se marcado, chamar o endpoint que retorna clientes sem compras há +12 meses
+                              
                             },
                             title: const Text(
                                 'Clientes há mais de 12 meses sem compras'),
