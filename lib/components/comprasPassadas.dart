@@ -15,6 +15,8 @@ class ComprasPassadas extends ConsumerWidget {
   // final double correios;
   final String entrega;
   final String observacao;
+  final String pagamentoId;
+  final String pedido;
 
   const ComprasPassadas({
     super.key,
@@ -25,6 +27,8 @@ class ComprasPassadas extends ConsumerWidget {
     required this.entrega,
     // required this.correios,
     required this.observacao,
+    required this.pagamentoId,
+    required this.pedido,
   });
 
   @override
@@ -57,91 +61,112 @@ class ComprasPassadas extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: SizedBox(
-              width: size.width * 0.069,
-              child: Text(
+          Expanded(
+            flex: 1, // data
+            child: Center(
+              child: SelectableText(
                 format.formatData(dataCompra),
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
           ),
           divisorVertical(),
-          Center(
-            child: SizedBox(
-                width: size.width * 0.3,
-                child: FutureBuilder<String>(
-                  future: produtoNome,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Text('Carregando...');
-                    } else if (snapshot.hasError) {
-                      return const Text('Erro ao buscar');
-                    } else {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                          child: Text(
-                            snapshot.data ?? 'Produto não encontrado',
-                            style: TextStyle(
-                              fontSize: fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
+          Expanded(
+            flex: 3, // produto
+            child: FutureBuilder<String>(
+              future: produtoNome,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Text('Carregando...');
+                } else if (snapshot.hasError) {
+                  return const Text('Erro ao buscar');
+                } else {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                      child: SelectableText(
+                        snapshot.data ?? 'Produto não encontrado',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    }
-                  },
-                )),
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
           ),
           divisorVertical(),
-          Center(
-            child: SizedBox(
-              width: size.width * 0.1,
-              child: Text(
-                format.formatDinheiro(
-                    valor), // vamos usar um outro formato para o valor
-                // cpf,
+          Expanded(
+            flex: 1, // valor
+            child: Center(
+              child: SelectableText(
+                format.formatDinheiro(valor),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
           ),
           divisorVertical(),
-          Center(
-            child: SizedBox(
-              width: size.width * 0.13,
-              child: Text(
+          Expanded(
+            flex: 2, // entrega
+            child: Center(
+              child: SelectableText(
                 entrega,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
           ),
           divisorVertical(),
-          Center(
-            child: SizedBox(
-              width: size.width * 0.25,
-              child: Text(
+          Expanded(
+            flex: 1, // pedido
+            child: Center(
+              child: SelectableText(
+                pedido,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          divisorVertical(),
+          Expanded(
+            flex: 1, // pagamento
+            child: Center(
+              child: SelectableText(
+                pagamentoId,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          divisorVertical(),
+          Expanded(
+            flex: 3, // observacao
+            child: Center(
+              child: SelectableText(
                 observacao,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

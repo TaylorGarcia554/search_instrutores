@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:search_instrutores/components/inputs.dart';
 
 class CampoDataCustom extends StatefulWidget {
   final void Function(DateTime?) onChanged;
@@ -55,20 +56,27 @@ class _CampoDataCustomState extends State<CampoDataCustom> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return CustomTextField(
+      label: widget.label,
+      hintText: '',
       controller: controller,
-      readOnly: true,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        labelStyle: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
-          fontSize: 12
-        ),
-        border: const OutlineInputBorder(),
-        suffixIcon: const Icon(Icons.calendar_today),
-      ),
       onTap: _selecionarData,
+      // readOnly: true,
     );
+
+    // TextFormField(
+    //   controller: controller,
+    //   readOnly: true,
+    //   decoration: InputDecoration(
+    //     labelText: widget.label,
+    //     labelStyle: TextStyle(
+    //       color: Theme.of(context).colorScheme.primary,
+    //       fontSize: 12
+    //     ),
+    //     border: const OutlineInputBorder(),
+    //     suffixIcon: const Icon(Icons.calendar_today),
+    //   ),
+    //   onTap: _selecionarData,
+    // );
   }
 }
-  

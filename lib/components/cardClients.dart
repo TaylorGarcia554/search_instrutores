@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/utils/statusProcessamento.dart';
 import 'package:search_instrutores/models/cliente.dart';
 import 'package:search_instrutores/utils/cor.dart';
@@ -14,11 +15,7 @@ class CardClients extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
 
-    // Calcular os dias restantes
-    final DateTime dataCompra = DateTime.parse(cliente.data);
-    final DateTime dataAtual = DateTime.now();
-    final Duration diferenca = dataAtual.difference(dataCompra);
-    final int diasRestantes = diferenca.inDays;
+    final produtoAsync = ref.watch(produtoFutureProvider(cliente.produto));
 
     final fomatador = Formatadorhelpers();
 
@@ -29,7 +26,7 @@ class CardClients extends ConsumerWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: size.width * 0.02,
+        horizontal: size.width * 0.007,
         vertical: size.height * 0.009,
       ),
       width: double.infinity,
@@ -42,6 +39,7 @@ class CardClients extends ConsumerWidget {
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -61,7 +59,7 @@ class CardClients extends ConsumerWidget {
               ),
               const Spacer(),
               Text(
-                fomatador.formatData(cliente.data),
+                fomatador.formatData(cliente.data, semAno: true),
                 // cliente.data,
                 style: TextStyle(
                   fontSize: size.width * 0.01,
@@ -72,39 +70,34 @@ class CardClients extends ConsumerWidget {
             ],
           ),
           SizedBox(height: size.height * 0.01),
-          Row(
-            children: [
-              SelectableText(
-                cliente.telefone,
-                style: TextStyle(
-                  fontSize: size.width * 0.01,
-                  color: Cor.texto,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                'Comprou a $diasRestantes dias',
-                style: TextStyle(
-                  fontSize: size.width * 0.01,
-                  color: Cor.texto,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          SelectableText(
+            cliente.telefone,
+            style: TextStyle(
+              fontSize: size.width * 0.01,
+              color: Cor.texto,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           SizedBox(height: size.height * 0.01),
-          Row(
-            children: [
-              SelectableText(
-                cliente.email,
-                style: TextStyle(
-                  fontSize: size.width * 0.01,
-                  color: Cor.texto,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+          SelectableText(
+            cliente.email,
+            style: TextStyle(
+              fontSize: size.width * 0.01,
+              color: Cor.texto,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: size.height * 0.01),
+          SelectableText(
+            produtoAsync.maybeWhen(
+              data: (data) => data,
+              orElse: () => 'Carregando...',
+            ),
+            style: TextStyle(
+              fontSize: size.width * 0.01,
+              color: Cor.texto,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),

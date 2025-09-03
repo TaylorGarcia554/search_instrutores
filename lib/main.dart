@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:search_instrutores/screen/configScreen.dart';
+import 'package:search_instrutores/screen/menuHome.dart';
 import 'package:search_instrutores/utils/theme.dart';
 import 'package:search_instrutores/screen/home.dart';
 // import 'package:search_instrutores/screen/searchPlanilha.dart';
@@ -33,14 +35,13 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-final themeProvider = StateProvider<bool>((ref) => false);
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = ref.watch(themeProvider);
+    final isDarkTheme = ref.watch(themeProvider);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -56,19 +57,10 @@ class MyApp extends ConsumerWidget {
       ],
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+      themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
       // themeMode: ThemeMode.dark ,
-      home: const Home(),
+      home: const Menuhome(),
     );
   }
 }
 
-class Home extends ConsumerWidget {
-  const Home({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // return BuscaPlanilhaPage();
-    return HomeScreen();
-  }
-}

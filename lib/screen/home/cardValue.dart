@@ -24,18 +24,22 @@ class CardValue extends ConsumerWidget {
     return Container(
         height: size.height * 0.15,
         decoration: BoxDecoration(
-          color: Cor.branco,
-          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(15),
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
           border: Border.all(
-            color: Cor.texto,
+            color: Theme.of(context).extension<AppColors>()!.inputBorder,
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha(120),
-              spreadRadius: 2,
-              blurRadius: 8,
-              offset: const Offset(0, 4), // sombra para baixo
+              spreadRadius: 0,
+              blurRadius: 4,
+              offset: const Offset(7, 6), // sombra para baixo
             ),
           ],
         ),
@@ -48,31 +52,26 @@ class CardValue extends ConsumerWidget {
                   text: 'Total de Vendas Mensal\n',
                   style: TextStyle(
                       fontSize: size.width * 0.008,
-                      color: Cor.texto,
                       fontWeight: FontWeight.bold),
                   children: [
                     valorTotal.when(
                       data: (valor) => TextSpan(
-                        text:
-                            formatoMoeda.format(valor['total'] ?? 0),
+                        text: formatoMoeda.format(valor['total'] ?? 0),
                         style: TextStyle(
                           fontSize: size.width * 0.02,
-                          color: Cor.texto,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       loading: () => TextSpan(
                         text: '\nCarregando...',
                         style: TextStyle(
-                          fontSize: size.width * 0.02,
-                          color: Cor.texto,
+                          fontSize: size.width * 0.009,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       error: (err, stack) => TextSpan(
                         text: '\nErro',
                         style: TextStyle(
-                          fontSize: size.width * 0.02,
+                          fontSize: size.width * 0.009,
                           color: Colors.red,
                           fontWeight: FontWeight.bold,
                         ),
@@ -102,7 +101,6 @@ class CardValue extends ConsumerWidget {
                       text: 'Novos Clientes',
                       style: TextStyle(
                           fontSize: size.width * 0.008,
-                          color: Cor.texto,
                           fontWeight: FontWeight.bold),
                       children: [
                         novosClientes.when(
@@ -110,7 +108,6 @@ class CardValue extends ConsumerWidget {
                             text: '\n ${valor['clientes_novos']}',
                             style: TextStyle(
                               fontSize: size.width * 0.02,
-                              color: Cor.texto,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

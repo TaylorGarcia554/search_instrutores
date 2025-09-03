@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:search_instrutores/utils/cor.dart';
 
 class Cliente {
   final int id;
@@ -115,6 +116,7 @@ class _CampoBuscaClienteState extends State<CampoBuscaCliente> {
           offset: Offset(0.0, size.height + 5.0),
           child: Material(
             elevation: 4.0,
+            color: Theme.of(context).extension<AppColors>()!.inputBackground,
             borderRadius: BorderRadius.circular(8),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 200),
@@ -175,41 +177,88 @@ class _CampoBuscaClienteState extends State<CampoBuscaCliente> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            controller: _clienteController,
-            focusNode: _focusNode,
-            decoration: InputDecoration(
-              labelText: 'Buscar Cliente',
-              border: const OutlineInputBorder(),
-              suffixIcon: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : (_clienteController.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _clienteController.clear();
-                            setState(() {
-                              _clientesEncontrados = [];
-                              _clienteSelecionado = null;
-                            });
-                            _removeOverlay();
-                          },
-                        )
-                      : const Icon(Icons.search)),
-            ),
-            onChanged: _onChanged,
-          ),
-          if (_clienteSelecionado != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                'Cliente selecionado: ${_clienteSelecionado!.nome.split(' ').length > 1 ? '${_clienteSelecionado!.nome.split(' ')[0]} ${_clienteSelecionado!.nome.split(' ')[1]}' : _clienteSelecionado!.nome}',
+          const Padding(
+            padding: EdgeInsets.only(bottom: 6.0, left: 4.0),
+            child: Text(
+              'Buscar Cliente',
+              style: TextStyle(
+                color: Color(0xFF797979),
+                fontSize: 14,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w400,
               ),
             ),
+          ),
+          Container(
+            decoration: const BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x3F000000),
+                  offset: Offset(7, 6),
+                  blurRadius: 4,
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: TextField(
+              controller: _clienteController,
+              focusNode: _focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6)
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).extension<AppColors>()!.inputBorder,
+                    width: 1,
+                  ),
+                ),
+                hintStyle: const TextStyle(
+                  color: Color(0xFFB0B0B0),
+                  fontSize: 13,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w400,
+                ),
+                filled: true,
+                fillColor: Theme.of(context).extension<AppColors>()!.inputBackground,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6),
+                  borderSide: const BorderSide(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+                ),
+                suffixIcon: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : (_clienteController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _clienteController.clear();
+                              setState(() {
+                                _clientesEncontrados = [];
+                                _clienteSelecionado = null;
+                              });
+                              _removeOverlay();
+                            },
+                          )
+                        : const Icon(Icons.search)),
+              ),
+              onChanged: _onChanged,
+            ),
+          ),
+          // if (_clienteSelecionado != null)
+          //   Padding(
+          //     padding: const EdgeInsets.only(top: 8.0),
+          //     child: Text(
+          //       'Cliente selecionado: ${_clienteSelecionado!.nome.split(' ').length > 1 ? '${_clienteSelecionado!.nome.split(' ')[0]} ${_clienteSelecionado!.nome.split(' ')[1]}' : _clienteSelecionado!.nome}',
+          //     ),
+          //   ),
           if (_error != null)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),

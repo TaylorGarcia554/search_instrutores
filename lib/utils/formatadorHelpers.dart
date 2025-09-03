@@ -39,7 +39,7 @@ class Formatadorhelpers {
     return 'R\$ ${value.toStringAsFixed(2).replaceAll('.', ',')}';
   }
 
-  String formatData(String data) {
+  String formatData(String data, {bool semAno = false}) {
     if (data.isEmpty) return '';
 
     // Pega só a parte antes do espaço (data)
@@ -52,6 +52,10 @@ class Formatadorhelpers {
     final mes = partes[1].padLeft(2, '0');
     final dia = partes[2].padLeft(2, '0');
 
+    if (semAno) {
+      return '$dia/$mes';
+    }
+
     return '$dia/$mes/$ano';
   }
 
@@ -59,105 +63,4 @@ class Formatadorhelpers {
     mask: '(##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
   );
-
-  Widget customField({
-    required TextEditingController controller,
-    required String label,
-    required bool isEditing,
-    required Color textColor,
-    required double fontSize,
-    required bool filled,
-    required int maxLines,
-    required Color colorEditing,
-    TextInputType? textInputType,
-    String? Function(String?)? validator, // <== aqui
-  }) {
-    final int? labelMax;
-
-    switch (label) {
-      case 'CPF':
-        labelMax = 14;
-        break;
-      case 'Nome:':
-        labelMax = 60;
-        break;
-      case 'Telefone':
-        labelMax = null;
-        break;
-      case 'Email':
-        labelMax = 255;
-        break;
-      case 'Valor':
-        labelMax = null;
-        break;
-      default:
-        // Outros casos podem ser tratados aqui se necessário
-        labelMax = null;
-        break;
-    }
-    return TextFormField(
-      controller: controller,
-      readOnly: !isEditing, // usa readOnly em vez de enabled
-      enableInteractiveSelection: true, // garante que pode selecionar/copiar
-      style: TextStyle(
-        color: textColor,
-        fontSize: fontSize,
-      ),
-      maxLength: labelMax, // define o limite de caracteres
-      inputFormatters: [
-        if (label == 'Telefone') telefoneFormatter,
-        if (label == 'Valor')
-          FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-        if (label == 'CPF') FilteringTextInputFormatter.digitsOnly,
-      ],
-      keyboardType: textInputType,
-      maxLines: maxLines, // permite altura dinâmica
-      minLines: 1, // começa com uma linha
-      validator: validator,
-      decoration: InputDecoration(
-        labelText: label,
-        counterText: '',
-        labelStyle: const TextStyle(color: Cor.texto),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-        filled: filled,
-        fillColor: const Color.fromARGB(255, 217, 217, 217),
-        border: label == 'Nome:'
-            ? const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 1.5),
-              )
-            : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.black, width: 1.5),
-              ),
-        enabledBorder: label == 'Nome:'
-            ? const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 1.5),
-              )
-            : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(
-                    color: isEditing ? colorEditing : Colors.black,
-                    width: isEditing ? 2 : 1.5),
-              ),
-        disabledBorder: label == 'Nome:'
-            ? const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 1.5),
-              )
-            : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.black, width: 1.5),
-              ),
-        focusedBorder: label == 'Nome:'
-            ? const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 1.5),
-              )
-            : OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(
-                    color: isEditing ? colorEditing : Colors.black, width: 1.5),
-              ),
-      ),
-    );
-  }
 }

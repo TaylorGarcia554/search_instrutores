@@ -6,6 +6,7 @@ class CompraProcessamento {
   final int compraId; // ID da compra
   final int statusProcessamento;
   final String email;
+  final int produto;
 
   CompraProcessamento({
     required this.nome,
@@ -15,6 +16,7 @@ class CompraProcessamento {
     required this.compraId,
     required this.statusProcessamento,
     required this.email,
+    required this.produto,
   });
 
   factory CompraProcessamento.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class CompraProcessamento {
       telefone: json['compra']['cliente']['telefone'],
       email: json['compra']['cliente']['email'],
       statusProcessamento: json['estado']['id'],
+      produto: json['compra']['produto_id'],
     );
   }
 }

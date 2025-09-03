@@ -46,67 +46,68 @@ class ResultadosSearchNovo extends ConsumerWidget {
     }
 
     return SizedBox(
-      height: 50,
+      height: 70,
       width: double.infinity,
-      
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: SizedBox(
-              width: size.width * 0.2,
+          // Nome
+          Expanded(
+            flex: 2, // ocupa 2 partes
+            child: Center(
               child: Text(
                 nome,
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
           ),
           divisorVertical(),
-          Center(
-            child: SizedBox(
-              width: size.width * 0.3,
+
+          // Email (maior)
+          Expanded(
+            flex: 3, // ocupa 3 partes
+            child: Center(
               child: Text(
                 email,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
           ),
           divisorVertical(),
-          Center(
-            child: SizedBox(
-              width: size.width * 0.2,
+
+          // CPF
+          Expanded(
+            flex: 2,
+            child: Center(
               child: Text(
                 format.formatCPFNumber(cpf),
-                // cpf,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
           ),
           divisorVertical(),
-          Center(
-            child: SizedBox(
-              width: size.width * 0.2,
+
+          // Telefone
+          Expanded(
+            flex: 2,
+            child: Center(
               child: Text(
                 format.formatPhoneNumber(telefone),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

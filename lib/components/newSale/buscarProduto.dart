@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:search_instrutores/utils/cor.dart';
 
 class Produto {
   final int id;
@@ -80,6 +81,7 @@ class _DropdownProdutosState extends State<DropdownProdutos> {
           offset: Offset(0, size.height),
           child: Material(
             elevation: 4,
+            color: Theme.of(context).extension<AppColors>()!.inputBackground,
             child: ConstrainedBox(
               constraints: const BoxConstraints(
                 maxHeight: 200,
@@ -141,10 +143,7 @@ class _DropdownProdutosState extends State<DropdownProdutos> {
               },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(4),
-          ),
+          
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
