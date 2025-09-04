@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/screen/configScreen.dart';
 import 'package:search_instrutores/screen/menuHome.dart';
 import 'package:search_instrutores/utils/theme.dart';
-import 'package:search_instrutores/screen/home.dart';
+// import 'package:search_instrutores/screen/home.dart';
 // import 'package:search_instrutores/screen/searchPlanilha.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:window_manager/window_manager.dart';

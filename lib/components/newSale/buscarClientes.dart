@@ -153,7 +153,7 @@ class _CampoBuscaClienteState extends State<CampoBuscaCliente> {
   void _selecionarCliente(Cliente cliente) {
     setState(() {
       _clienteSelecionado = cliente;
-      _clienteController.text = cliente.email;
+      _clienteController.text = cliente.nome;
       _clientesEncontrados = [];
     });
     widget.onClienteSelecionado(cliente);

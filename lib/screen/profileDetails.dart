@@ -1,7 +1,7 @@
-import 'package:flutter/gestures.dart';
+// import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+// import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:search_instrutores/components/comprasPassadas.dart';
 import 'package:search_instrutores/components/inputs.dart';
 import 'package:search_instrutores/components/showMessager.dart';
@@ -103,6 +103,12 @@ class _ProfileDetailsState extends ConsumerState<ProfileDetails> {
         TextEditingController(text: _clientes?['observacao']);
 
     final _formKey = GlobalKey<FormState>();
+
+    comprasPassadas.sort((a, b) {
+      final dataA = DateTime.tryParse(a['data_pedido'] ?? '') ?? DateTime(1900);
+      final dataB = DateTime.tryParse(b['data_pedido'] ?? '') ?? DateTime(1900);
+      return dataB.compareTo(dataA); // Mais recente primeiro
+    });
 
     return Scaffold(
       appBar: AppBar(

@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfigScreen extends ConsumerStatefulWidget {
+  const ConfigScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _ConfigScreenState createState() => _ConfigScreenState();
 }
 

@@ -87,18 +87,75 @@ class CardClients extends ConsumerWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: size.height * 0.01),
-          SelectableText(
-            produtoAsync.maybeWhen(
-              data: (data) => data,
-              orElse: () => 'Carregando...',
+          // SizedBox(height: size.height * 0.01),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       flex: 4,
+          //       child: SelectableText(
+          //         produtoAsync.maybeWhen(
+          //           data: (data) => data,
+          //           orElse: () => 'Carregando...',
+          //         ),
+          //         style: TextStyle(
+          //           fontSize: size.width * 0.01,
+          //           color: Cor.texto,
+          //           fontWeight: FontWeight.bold,
+          //         ),
+          //       ),
+          //     ),
+          //     Expanded(child:
+          //       ,
+          //     )
+          //   ],
+          // ),
+          ExpansionTile(
+            tilePadding: EdgeInsets.zero, // tira espaçamento lateral
+            childrenPadding: EdgeInsets.zero, // tira espaçamento dos filhos
+            dense: true, // deixa mais compacto
+            title: Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: SelectableText(
+                    produtoAsync.maybeWhen(
+                      data: (data) => data,
+                      orElse: () => 'Carregando...',
+                    ),
+                    style: TextStyle(
+                      fontSize: size.width * 0.01,
+                      color: Cor.texto,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            style: TextStyle(
-              fontSize: size.width * 0.01,
-              color: Cor.texto,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // ação do botão 1
+                      },
+                      child: const Text("Botão 1"),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        // ação do botão 2
+                      },
+                      child: const Text("Botão 2"),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );

@@ -5,7 +5,7 @@ import 'package:search_instrutores/components/button.dart';
 import 'package:search_instrutores/components/inputs.dart';
 import 'package:search_instrutores/components/showMessager.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
-import 'package:search_instrutores/utils/cor.dart';
+// import 'package:search_instrutores/utils/cor.dart';
 import 'package:search_instrutores/utils/formatadorHelpers.dart';
 
 class NewClient extends ConsumerStatefulWidget {
@@ -38,15 +38,15 @@ class _NewClientState extends ConsumerState<NewClient> {
     // final customField = formatador.customField;
 
     // Cria o formatter CPF/CNPJ
-    final cpfCnpjFormatter = MaskTextInputFormatter(
-      mask: '###.###.###-##', // CPF
-      filter: {"#": RegExp(r'[0-9]')},
-    );
+    // final cpfCnpjFormatter = MaskTextInputFormatter(
+    //   mask: '###.###.###-##', // CPF
+    //   filter: {"#": RegExp(r'[0-9]')},
+    // );
 
-    final cnpjFormatter = MaskTextInputFormatter(
-      mask: '##.###.###/####-##', // CNPJ
-      filter: {"#": RegExp(r'[0-9]')},
-    );
+    // final cnpjFormatter = MaskTextInputFormatter(
+    //   mask: '##.###.###/####-##', // CNPJ
+    //   filter: {"#": RegExp(r'[0-9]')},
+    // );
 
     final _formKey = GlobalKey<FormState>();
 

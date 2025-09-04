@@ -11,7 +11,7 @@ import 'package:search_instrutores/components/newSale/datePicker.dart';
 import 'package:search_instrutores/components/showMessager.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/utils/cor.dart';
-import 'package:search_instrutores/utils/formatadorHelpers.dart';
+// import 'package:search_instrutores/utils/formatadorHelpers.dart';
 
 class NewSale extends ConsumerStatefulWidget {
   const NewSale({
@@ -176,9 +176,9 @@ class _NewSaleState extends ConsumerState<NewSale> {
                             label: "Tipo de Entrega",
                             hintText: "Digite o tipo de entrega",
                             controller: entregaController,
-                            validator: (value) => value == null || value.isEmpty
-                                ? "Obrigatório"
-                                : null,
+                            // validator: (value) => value == null || value.isEmpty
+                            //     ? "Obrigatório"
+                            //     : null,
                             isEditing: true, // ou false se quiser bloqueado
                           ),
                         ),

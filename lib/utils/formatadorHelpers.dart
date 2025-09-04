@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:search_instrutores/utils/cor.dart';
+
 
 class Formatadorhelpers {
   String formatPhoneNumber(String value) {
