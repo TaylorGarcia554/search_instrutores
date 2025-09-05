@@ -22,7 +22,8 @@ class _AtualizacoesscreenState extends ConsumerState<Atualizacoesscreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("Resultado atual: ${resultados.length}");
+    // print("Resultado atual: ${resultados.length}");
+    final size = MediaQuery.of(context).size;
 
     void pesquisarClientes(String query) async {
       // lógica para filtrar/pesquisar
@@ -198,10 +199,11 @@ class _AtualizacoesscreenState extends ConsumerState<Atualizacoesscreen> {
                   child: SizedBox(
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.download),
-                      label: const Text(
+                      label: Text(
                         'Exportar',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: size.width * 0.0125,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(

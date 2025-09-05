@@ -1,6 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:search_instrutores/utils/cor.dart';
+
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:search_instrutores/components/showMessager.dart';
 
 class ExportarCsvModal extends StatefulWidget {
   const ExportarCsvModal({super.key});
@@ -73,23 +80,44 @@ class _ExportarCsvModalState extends State<ExportarCsvModal> {
     if (data != null) setState(() => dataFim = data);
   }
 
-  void baixarCsv() {
+  Future<void> baixarCsv(BuildContext context, DateTime? dataInicio,
+      DateTime? dataFim, bool exportarVendas) async {
     if (dataInicio == null || dataFim == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Selecione o período")),
+      showCustomMessage(
+        context,
+        "Seleciona um período válido",
+        type: MessageType.info,
       );
       return;
     }
 
     String tipo = exportarVendas ? "vendas" : "clientes";
     String url =
-        "https://seuservidor.com/api/exportar/$tipo?inicio=${dataInicio!.toIso8601String()}&fim=${dataFim!.toIso8601String()}";
+        "http://app.autoescolaonline.net/api/export/$tipo?inicio=${dataInicio.toIso8601String()}&fim=${dataFim.toIso8601String()}";
 
-    // 👉 Aqui você pode usar url_launcher ou dio para abrir/baixar o arquivo
-    print("Baixando de: $url");
+    try {
+      // Diretório do app (Downloads em Android, Documents em iOS)
+      Directory dir = await getApplicationDocumentsDirectory();
+      String filePath =
+          "${dir.path}/$tipo-${DateTime.now().millisecondsSinceEpoch}.csv";
 
-    // Exemplo simples com url_launcher
-    // launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      Dio dio = Dio();
+      await dio.download(url, filePath);
+
+      showCustomMessage(
+        context,
+        "Baixando arquivo...",
+        type: MessageType.warning,
+        duration: const Duration(seconds: 2),
+      );
+
+      // 👉 Se quiser abrir automaticamente o CSV
+      await OpenFilex.open(filePath);
+
+      Navigator.pop(context); // Fecha o modal após o download
+    } catch (e) {
+      log("Erro ao baixar CSV: $e");
+    }
   }
 
   @override
@@ -166,7 +194,9 @@ class _ExportarCsvModalState extends State<ExportarCsvModal> {
           ),
         ),
         ElevatedButton(
-          onPressed: baixarCsv,
+          onPressed: () {
+            baixarCsv(context, dataInicio, dataFim, exportarVendas);
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,

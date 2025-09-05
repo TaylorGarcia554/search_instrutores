@@ -392,6 +392,59 @@ class SearchProvider extends ChangeNotifier {
       return [];
     }
   }
+
+  // Funcao que atualiza o status do processamento
+  Future<void> atualizarStatusProcessamento(
+    int processamentoId,
+    int status,
+    {DateTime? dataFim}
+  ) async {
+    final atualizacao = {
+      'estados_id': status,
+      'data_fim': dataFim?.toIso8601String(),
+    };
+
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/compraprocessamento/$processamentoId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(atualizacao),
+      );
+
+      if (response.statusCode == 200) {
+        log('Status do processamento atualizado com sucesso');
+        // Aqui você pode atualizar o banco de dados local se necessário
+      } else {
+        log('Erro ao atualizar status do processamento: ${response.body}');
+        throw Exception('Erro ao atualizar status do processamento');
+      }
+    } catch (e) {
+      log('Erro ao atualizar status do processamento: $e');
+    }
+  }
+
+  // Funcao que atualiza a venda
+  Future<void> atualizarVenda(
+      int vendaId, Map<String, dynamic> dadosAtualizados) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/compras/$vendaId'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(dadosAtualizados),
+      );
+
+      if (response.statusCode == 200) {
+        log('Venda atualizada com sucesso');
+        // Aqui você pode atualizar o banco de dados local se necessário
+      } else {
+        log('Erro ao atualizar venda: ${response.body}');
+        throw Exception('Erro ao atualizar venda');
+      }
+    } catch (e) {
+      log('Erro ao atualizar venda: $e');
+    }
+  }
+
   // -------------------------- API NOVA --------------------------
 }
 

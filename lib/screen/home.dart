@@ -143,7 +143,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 1),
                                       child: CardClients(
-                                        cliente:
+                                        compra:
                                             listaDeComprasProcessando[index],
                                       ),
                                     );
