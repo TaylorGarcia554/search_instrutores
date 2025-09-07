@@ -54,10 +54,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _timer = Timer.periodic(const Duration(seconds: 10), (_) async {
       if (!mounted) return;
 
-      final novoResultado =
+      final clientes =
           await ref.read(searchProvider.notifier).buscarClientesNovosPorMes();
 
-      // Comparar JSON atual com o último salvo
+      final vendas =
+          await ref.read(searchProvider.notifier).buscarVendasPorMes();
+
+      // Cria um "snapshot" do estado atual
+      final novoResultado = {
+        "clientes": clientes,
+        "vendas": vendas,
+      };
+
+      // Compara com o último snapshot
       if (_ultimoResultado == null ||
           jsonEncode(_ultimoResultado) != jsonEncode(novoResultado)) {
         _ultimoResultado = novoResultado;
