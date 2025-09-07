@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +20,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final List<CompraProcessamento> listaDeComprasProcessando = [];
+  Timer? _timer;
 
   String saudacaoDoDia() {
     final hora = DateTime.now().hour;
@@ -41,10 +45,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return "Hoje é ${data[0].toUpperCase()}${data.substring(1)}";
   }
 
+  Map<String, dynamic>? _ultimoResultado;
+
   @override
   void initState() {
     super.initState();
-    // Adicione inicializações aqui se necessário
+
+    _timer = Timer.periodic(const Duration(seconds: 10), (_) async {
+      if (!mounted) return;
+
+      final novoResultado =
+          await ref.read(searchProvider.notifier).buscarClientesNovosPorMes();
+
+      // Comparar JSON atual com o último salvo
+      if (_ultimoResultado == null ||
+          jsonEncode(_ultimoResultado) != jsonEncode(novoResultado)) {
+        _ultimoResultado = novoResultado;
+        ref.read(refreshTriggerProvider.notifier).state++;
+        print('🔄 Dados mudaram, atualizando...');
+      } else {
+        print('✅ Sem mudanças, não atualizei.');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override

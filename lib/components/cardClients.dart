@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:search_instrutores/components/inputs.dart';
 import 'package:search_instrutores/components/newSale/campoMonetario.dart';
+import 'package:search_instrutores/components/showMessager.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/utils/statusProcessamento.dart';
 import 'package:search_instrutores/models/cliente.dart';
@@ -165,7 +166,7 @@ class CardClients extends ConsumerWidget {
                                                     1.5), // borda fina (opcional)
                                           ),
                                         ),
-                                        child: const Text('Confirmar', 
+                                        child: const Text('Confirmar',
                                             style:
                                                 TextStyle(color: Colors.white)),
                                         onPressed: () {
@@ -286,17 +287,22 @@ class CardClients extends ConsumerWidget {
                                         final valorCorreios =
                                             valorCorreiosController.text.trim();
 
-                                        if (tipoEntrega.isEmpty ||
-                                            valorCorreios.isEmpty) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  "Preencha todos os campos"),
-                                            ),
+                                        if (tipoEntrega.isEmpty) {
+                                          showCustomMessage(
+                                            context,
+                                            'Por favor, preencha o tipo de entrega.',
+                                            type: MessageType.warning,
                                           );
                                           return;
                                         }
+
+                                        await ref
+                                            .read(searchProvider.notifier)
+                                            .atualizarStatusProcessamento(
+                                              compra.id,
+                                              3,
+                                              dataFim: DateTime.now(),
+                                            );
 
                                         await ref
                                             .read(searchProvider.notifier)

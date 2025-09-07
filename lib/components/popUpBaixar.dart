@@ -112,7 +112,8 @@ class _ExportarCsvModalState extends State<ExportarCsvModal> {
       );
 
       // 👉 Se quiser abrir automaticamente o CSV
-      await OpenFilex.open(filePath);
+      await OpenFilex.open(
+          filePath); // TODO: Trocar esse showCustom aqui para ficar independente, e aii mostrar quando for baixado.
 
       Navigator.pop(context); // Fecha o modal após o download
     } catch (e) {

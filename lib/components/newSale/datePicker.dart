@@ -40,6 +40,23 @@ class _CampoDataCustomState extends State<CampoDataCustom> {
       initialDate: dataSelecionada ?? agora,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue, // cor do dia selecionado
+              onPrimary: Colors.white, // cor do texto do dia selecionado
+              onSurface: Colors.black, // cor dos dias não selecionados
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue, // cor dos botões OK/CANCEL
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (data != null) {

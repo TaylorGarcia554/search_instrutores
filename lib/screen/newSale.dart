@@ -258,7 +258,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                           width: 20,
                         ),
                         SizedBox(
-                          width: size.width * 0.4,
+                          width: size.width * 0.3,
                           child: Column(
                             children: [
                               Align(
