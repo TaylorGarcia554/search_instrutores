@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:search_instrutores/screen/logScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfigScreen extends ConsumerStatefulWidget {
@@ -39,6 +40,24 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                 ),
               ],
             ),
+            const SizedBox(
+              height: 8.0,
+            ),
+            SizedBox(
+              height: 40,
+              width: double.infinity,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    (MaterialPageRoute(
+                      builder: (context) => LogsPage(),
+                    )),
+                  );
+                },
+                child: const Text('Acessar os Logs do Servidor',
+                    style: TextStyle(fontSize: 18)),
+              ),
+            )
           ],
         ),
       ),
