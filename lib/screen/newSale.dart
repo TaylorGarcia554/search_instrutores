@@ -11,6 +11,8 @@ import 'package:search_instrutores/components/newSale/datePicker.dart';
 import 'package:search_instrutores/components/showMessager.dart';
 import 'package:search_instrutores/provider/searchProvider.dart';
 import 'package:search_instrutores/utils/cor.dart';
+import 'package:search_instrutores/utils/newSalesTutor.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 // import 'package:search_instrutores/utils/formatadorHelpers.dart';
 
 class NewSale extends ConsumerStatefulWidget {
@@ -23,12 +25,21 @@ class NewSale extends ConsumerStatefulWidget {
 }
 
 class _NewSaleState extends ConsumerState<NewSale> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   final _formKey = GlobalKey<FormState>();
+
+  // Global Key para o tutorial
+  final GlobalKey keyDataPedido = GlobalKey();
+  final GlobalKey keyDataEntrega = GlobalKey();
+  final GlobalKey keyTipoEntrega = GlobalKey();
+  final GlobalKey keyPedido = GlobalKey();
+  final GlobalKey keyValor = GlobalKey();
+  final GlobalKey keyTipoPagamento = GlobalKey();
+  final GlobalKey keyValorCorreios = GlobalKey();
+  final GlobalKey keyCliente = GlobalKey();
+  final GlobalKey keyProduto = GlobalKey();
+  final GlobalKey keySalvarVenda = GlobalKey();
+
+  List<TargetFocus> targets = [];
 
   // Controllers para inputs
   final pedidoController = TextEditingController();
@@ -49,6 +60,11 @@ class _NewSaleState extends ConsumerState<NewSale> {
   Produto? produtoSelecionado;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     pedidoController.dispose();
     entregaController.dispose();
@@ -60,6 +76,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     void _tentarSalvarVenda(BuildContext context) async {
       if (_formKey.currentState!.validate()) {
         // aqui vai lógica de salvar no banco
@@ -118,15 +135,47 @@ class _NewSaleState extends ConsumerState<NewSale> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Nova Venda',
-                style: TextStyle(
-                  fontSize: size.width * 0.02,
-                  fontWeight: FontWeight.w500,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Nova Venda',
+                    style: TextStyle(
+                      fontSize: size.width * 0.02,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      initTargets(
+                        keyDataPedido,
+                        keyDataEntrega,
+                        keyTipoEntrega,
+                        keyPedido,
+                        keyValor,
+                        keyTipoPagamento,
+                        keyValorCorreios,
+                        keyCliente,
+                        keyProduto,
+                      );
+                      showTutorial(context);
+                    });
+                    // showTutorial(context);
+                  },
+                  child: Text(
+                    "Ver Tutorial",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface
+                    ),
+                  ),
+                )
+              ],
             ),
             const SizedBox(
               height: 20,
@@ -141,7 +190,9 @@ class _NewSaleState extends ConsumerState<NewSale> {
                       children: [
                         SizedBox(
                           width: size.width * 0.25,
+                          key: keyDataPedido,
                           child: CampoDataCustom(
+                            // key: keyDataPedido,
                             label: 'Data do Pedido',
                             dataInicial: dataPedido,
                             onChanged: (novaData) => setState(() {
@@ -154,6 +205,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                         ),
                         SizedBox(
                           width: size.width * 0.25,
+                          key: keyDataEntrega,
                           child: CampoDataCustom(
                             label: 'Data da Entrega',
                             dataInicial: dataEntrega,
@@ -172,6 +224,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                       children: [
                         SizedBox(
                           width: size.width * 0.25,
+                          key: keyTipoEntrega,
                           child: CustomTextField(
                             label: "Tipo de Entrega",
                             hintText: "Digite o tipo de entrega",
@@ -187,6 +240,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                         ),
                         SizedBox(
                           width: size.width * 0.25,
+                          key: keyPedido,
                           child: CustomTextField(
                             label: "Pedido",
                             hintText: "Digite o tipo do pedido",
@@ -206,6 +260,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                       children: [
                         SizedBox(
                           width: size.width * 0.17,
+                          key: keyValor,
                           child: CampoMonetario(
                             labelText: 'Valor do Produto',
                             initialValue: valorReal,
@@ -220,6 +275,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                         ),
                         SizedBox(
                           width: size.width * 0.17,
+                          key: keyTipoPagamento,
                           child: CustomTextField(
                             label: "Tipo de Pagamento",
                             hintText: "Dropdown futuramente",
@@ -235,6 +291,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                         ),
                         SizedBox(
                           width: size.width * 0.17,
+                          key: keyValorCorreios,
                           child: CampoMonetario(
                             labelText: 'Valor Correios',
                             onChanged: (valor) => valorCorreios = valor,
@@ -249,6 +306,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                       children: [
                         SizedBox(
                           width: size.width * 0.4,
+                          key: keyCliente,
                           child: CampoBuscaCliente(
                             onClienteSelecionado: (cliente) =>
                                 clienteSelecionado = cliente,
@@ -259,6 +317,7 @@ class _NewSaleState extends ConsumerState<NewSale> {
                         ),
                         SizedBox(
                           width: size.width * 0.3,
+                          key: keyProduto,
                           child: Column(
                             children: [
                               Align(
@@ -283,13 +342,17 @@ class _NewSaleState extends ConsumerState<NewSale> {
                                   ],
                                   borderRadius: BorderRadius.circular(6),
                                   border: Border.all(
-                                    color: Theme.of(context).extension<AppColors>()!.inputBorder,
+                                    color: Theme.of(context)
+                                        .extension<AppColors>()!
+                                        .inputBorder,
                                     width: 1,
                                   ),
                                 ),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).extension<AppColors>()!.inputBackground,
+                                    color: Theme.of(context)
+                                        .extension<AppColors>()!
+                                        .inputBackground,
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: DropdownProdutos(
@@ -345,292 +408,4 @@ class _NewSaleState extends ConsumerState<NewSale> {
       ),
     );
   }
-
-  // final formatador = Formatadorhelpers();
-
-  // DateTime? dataPedido; // Pega a data do pedido
-  // DateTime? dataEntrega; // Pega a data da entrega
-  // double valorReal = 0.0; // Pega o valor real do produto
-  // double valorCorreios = 0.0; // Pega o valor real do produto
-  // Cliente? clienteSelecionado;
-  // Produto? _produtoSelecionado;
-  // String? observacoes;
-  // String? pedido;
-  // String? entrega;
-  // String? pagamentoId;
-
-  // void _tentarSalvarVenda(BuildContext context, WidgetRef ref) async {
-  //   final erro = _validarFormulario();
-
-  //   if (erro != null) {
-  //     showCustomMessage(context, erro, type: MessageType.warning);
-  //     return;
-  //   }
-
-  //   final resposta = await ref.read(searchProvider.notifier).salvarVenda(
-  //         cliente: clienteSelecionado!.id,
-  //         produto: _produtoSelecionado!.id,
-  //         valor: valorReal,
-  //         entrega: entrega,
-  //         pagamentoId: pagamentoId,
-  //         pedido: pedido,
-  //         correios: valorCorreios,
-  //         dataPedido: dataPedido!,
-  //         dataEntrega: dataEntrega,
-  //         observacoes: observacoes,
-  //       );
-
-  //   if (resposta.isEmpty || resposta['id'] == null) {
-  //     showCustomMessage(context, 'Erro ao salvar a venda.',
-  //         type: MessageType.error);
-  //     return;
-  //   }
-
-  //   ref.read(searchProvider.notifier).iniciarProcessodeVendas(
-  //         resposta['id'],
-  //         dataEntrega == null ? 1 : 3,
-  //         dataComeco: dataPedido,
-  //         dataEntraga: dataEntrega,
-  //       );
-
-  //   setState(() {
-  //     clienteSelecionado = null;
-  //     _produtoSelecionado = null;
-  //     dataPedido = null;
-  //     dataEntrega = null;
-  //     valorReal = 0.0;
-  //     valorCorreios = 0.0;
-  //     observacoes = '';
-  //   });
-
-  //   ref.invalidate(vendasPorMesProvider);
-  //   ref.invalidate(clientesNovosProvider);
-
-  //   showCustomMessage(context, 'Venda salva com sucesso!',
-  //       type: MessageType.success);
-  // }
-
-  // String? _validarFormulario() {
-  //   if (clienteSelecionado == null) {
-  //     return 'Selecione um cliente antes de salvar.';
-  //   }
-  //   if (_produtoSelecionado == null) {
-  //     return 'Selecione um produto antes de salvar.';
-  //   }
-  //   if (dataPedido == null) return 'Preencha as datas do pedido.';
-  //   if (valorReal <= 0) return 'O valor do produto deve ser maior que zero.';
-  //   if (dataEntrega != null && dataEntrega!.isBefore(dataPedido!)) {
-  //     return 'A data de entrega não pode ser anterior à data do pedido.';
-  //   }
-  //   if (valorCorreios < 0) return 'O valor dos Correios não pode ser negativo.';
-  //   return null;
-  // }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   final size = MediaQuery.of(context).size;
-
-  //   final dataNow =
-  //       DateTime.now(); // Variavel para passar a data de hoje no campo
-
-  //   dataPedido ??= dataNow; // Inicializa dataPedido com a data atual
-
-  //   return Scaffold(
-
-  //     body: Padding(
-  //       padding: const EdgeInsets.all(20.0),
-  //       child: SizedBox(
-  //         width: double.infinity,
-  //         child: Center(
-  //           child: Padding(
-  //             padding: const EdgeInsets.all(16.0),
-  //             child: SingleChildScrollView(
-  //               padding: const EdgeInsets.all(8.0),
-  //               child: ConstrainedBox(
-  //                 constraints: BoxConstraints(
-  //                   minHeight: MediaQuery.of(context).size.height,
-  //                 ),
-  //                 child: IntrinsicHeight(
-  //                   child: Column(
-  //                     children: [
-  //                       Wrap(
-  //                         spacing: 16,
-  //                         runSpacing: 16,
-  //                         children: [
-  //                           SizedBox(
-  //                             width: size.width * 0.25,
-  //                             child: CampoDataCustom(
-  //                               label: 'Data do Pedido',
-  //                               dataInicial: dataNow,
-  //                               onChanged: (novaData) {
-  //                                 dataPedido = novaData;
-  //                               },
-  //                             ),
-  //                           ),
-  //                           SizedBox(
-  //                             width: size.width * 0.25,
-  //                             child: CampoDataCustom(
-  //                               label: 'Data da Entrega',
-  //                               dataInicial: dataEntrega,
-  //                               onChanged: (novaData) {
-  //                                 dataEntrega = novaData;
-  //                                 print(
-  //                                     'Nova data de entrega: $dataEntrega');
-  //                               },
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                       const SizedBox(height: 30),
-  //                       Wrap(
-  //                         spacing: 16,
-  //                         runSpacing: 16,
-  //                         children: [
-  //                           SizedBox(
-  //                             width: size.width * 0.25,
-  //                             child: TextField(
-  //                               decoration: const InputDecoration(
-  //                                 labelText: 'Tipo de Entrega',
-  //                                 border: OutlineInputBorder(),
-  //                               ),
-  //                               onChanged: (value) {
-  //                                 entrega = value;
-  //                               },
-  //                             ),
-  //                           ),
-  //                           SizedBox(
-  //                             width: size.width * 0.25,
-  //                             child: TextField(
-  //                               decoration: const InputDecoration(
-  //                                 labelText: 'Pedido',
-  //                                 border: OutlineInputBorder(),
-  //                               ),
-  //                               onChanged: (value) {
-  //                                 pedido = value;
-  //                               },
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                       const SizedBox(height: 30),
-  //                       Wrap(
-  //                         spacing: 16,
-  //                         runSpacing: 16,
-  //                         children: [
-  //                           SizedBox(
-  //                             width: size.width * 0.25,
-  //                             child: CampoMonetario(
-  //                               labelText: 'Valor do Produto',
-  //                               onChanged: (valor) {
-  //                                 valorReal = valor;
-  //                                 log('Valor atualizado: $valorReal');
-  //                               },
-  //                             ),
-  //                           ),
-  //                           SizedBox(
-  //                             width: size.width * 0.25,
-  //                             child: TextField(
-  //                               decoration: const InputDecoration(
-  //                                 labelText: 'Tipo de Pagamento',
-  //                                 border: OutlineInputBorder(),
-  //                               ),
-  //                               onChanged: (value) {
-  //                                 pagamentoId = value;
-  //                               },
-  //                             ),
-  //                           ),
-  //                           SizedBox(
-  //                             width: size.width * 0.25,
-  //                             child: CampoMonetario(
-  //                               labelText: 'Valor Correios',
-  //                               onChanged: (valor) {
-  //                                 valorCorreios = valor;
-  //                                 log('Valor atualizado: $valorCorreios');
-  //                               },
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                       const SizedBox(height: 30),
-  //                       Wrap(
-  //                         spacing: 16,
-  //                         runSpacing: 16,
-  //                         children: [
-  //                           SizedBox(
-  //                             width: size.width * 0.4,
-  //                             child: CampoBuscaCliente(
-  //                               onClienteSelecionado: (cliente) {
-  //                                 clienteSelecionado = cliente;
-  //                                 log('Cliente escolhido: ${cliente.nome}, ID: ${cliente.id}');
-  //                               },
-  //                             ),
-  //                           ),
-  //                           SizedBox(
-  //                             width: size.width * 0.4,
-  //                             child: DropdownProdutos(
-  //                               onProdutoSelecionado: (produto) {
-  //                                 _produtoSelecionado = produto;
-  //                                 log('Produto escolhido: ${produto.nome}, ID: ${produto.id}');
-  //                               },
-  //                             ),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                       const SizedBox(height: 30),
-  //                       TextField(
-  //                         maxLines: 4,
-  //                         decoration: const InputDecoration(
-  //                           labelText: 'Observações',
-  //                           hintText:
-  //                               'Digite aqui observações sobre o pedido...',
-  //                           border: OutlineInputBorder(),
-  //                         ),
-  //                         onChanged: (value) {
-  //                           observacoes = value;
-  //                         },
-  //                       ),
-  //                       const SizedBox(height: 30),
-  //                       Align(
-  //                         alignment: Alignment.centerRight,
-  //                         child: ElevatedButton(
-  //                           onPressed: () async {
-  //                             _tentarSalvarVenda(context, ref);
-  //                             // setState(() {
-  //                             //   clienteSelecionado = null;
-  //                             //   _produtoSelecionado = null;
-  //                             //   dataPedido = null;
-  //                             //   dataEntrega = null;
-  //                             //   valorReal = 0.0;
-  //                             //   valorCorreios = 0.0;
-  //                             //   observacoes = '';
-  //                             // });
-  //                           },
-  //                           style: ElevatedButton.styleFrom(
-  //                             backgroundColor:
-  //                                 const Color.fromARGB(255, 0, 255, 68),
-  //                             foregroundColor: Colors.black,
-  //                             shape: RoundedRectangleBorder(
-  //                               borderRadius: BorderRadius.circular(8),
-  //                             ),
-  //                           ),
-  //                           child: const Text(
-  //                             'Salvar Venda',
-  //                             style: TextStyle(
-  //                               fontSize: 12,
-  //                               fontWeight: FontWeight.bold,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }

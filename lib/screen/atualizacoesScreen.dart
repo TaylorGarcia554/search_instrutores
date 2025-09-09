@@ -8,7 +8,7 @@ import 'package:search_instrutores/utils/cor.dart';
 
 class Atualizacoesscreen extends ConsumerStatefulWidget {
 // class Atualizacoesscreen extends ConsumerWidget {
-  Atualizacoesscreen({super.key});
+  const Atualizacoesscreen({super.key});
 
   @override
   ConsumerState<Atualizacoesscreen> createState() => _AtualizacoesscreenState();
@@ -148,33 +148,65 @@ class _AtualizacoesscreenState extends ConsumerState<Atualizacoesscreen> {
                               ],
                             ),
                             const SizedBox(height: 16),
-            
-                            // ✅ Filtro pré-definido: +12 meses sem compras
-                            CheckboxListTile(
-                              value:
-                                  checkBox12meses, // trocar por variável de estado
-                              onChanged: (value) {
-                                setState(() {
-                                  checkBox12meses =
-                                      value ?? false; // atualiza o estado
-                                });
-                                if (value == true) {
-                                  // Se marcado, chamar a função que busca clientes sem compras há +12 meses
-                                  compradosHaMaisDe12Meses();
-                                } else {
-                                  // Se desmarcado, limpar os resultados ou aplicar outro filtro
+
+                            // // ✅ Filtro pré-definido: +12 meses sem compras
+                            // CheckboxListTile(
+                            //   value:
+                            //       checkBox12meses, // trocar por variável de estado
+                            //   onChanged: (value) {
+                            //     setState(() {
+                            //       checkBox12meses =
+                            //           value ?? false; // atualiza o estado
+                            //     });
+                            //     if (value == true) {
+                            //       // Se marcado, chamar a função que busca clientes sem compras há +12 meses
+                            //       compradosHaMaisDe12Meses();
+                            //     } else {
+                            //       // Se desmarcado, limpar os resultados ou aplicar outro filtro
+                            //       setState(() {
+                            //         resultados = [];
+                            //       });
+                            //     }
+                            //   },
+                            //   title: const Text(
+                            //       'Clientes há mais de 12 meses sem compras'),
+                            //   controlAffinity: ListTileControlAffinity.leading,
+                            // ),
+                            Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 2,
+                              child: CheckboxListTile(
+                                value: checkBox12meses,
+                                onChanged: (value) {
                                   setState(() {
-                                    resultados = [];
+                                    checkBox12meses = value ?? false;
                                   });
-                                }
-                              },
-                              title: const Text(
-                                  'Clientes há mais de 12 meses sem compras'),
-                              controlAffinity: ListTileControlAffinity.leading,
+                                  if (value == true) {
+                                    compradosHaMaisDe12Meses();
+                                  } else {
+                                    setState(() {
+                                      resultados = [];
+                                    });
+                                  }
+                                },
+                                title: const Text(
+                                  'Inativos há 12+ meses',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                subtitle: const Text(
+                                  'Clientes que não realizam compras há mais de 1 ano',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.grey),
+                                ),
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                              ),
                             ),
-            
+
                             const SizedBox(height: 16),
-            
+
                             // 🔎 Botão para aplicar filtros
                             SizedBox(
                               width: double.infinity,

@@ -304,7 +304,7 @@ class SearchProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        log('Vendas por mês: $data');
+        // log('Vendas por mês: $data');
         return data.map((key, value) => MapEntry(key, value.toDouble()));
       } else {
         log('Erro ao buscar vendas por mês: ${response.body}');

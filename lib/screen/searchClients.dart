@@ -168,7 +168,7 @@ class SearchClientsScreen extends ConsumerWidget {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'Última compra',
+                      'CPF/CNPJ',
                       textAlign: TextAlign.center,
                     ),
                   ),

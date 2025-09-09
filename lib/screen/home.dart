@@ -241,9 +241,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ],
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(size.height * 0.02),
-                        child: const ComprasGrafico(),
+                      child: Column(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'Desempenho no mês'
+                            ),
+                          ),
+                          Expanded(
+                            flex: 9,
+                            child: Padding(
+                              padding: EdgeInsets.all(size.height * 0.02),
+                              child: const ComprasGrafico(),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(
