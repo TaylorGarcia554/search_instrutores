@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:search_instrutores/keys/keys.dart';
 import 'package:search_instrutores/screen/menuHome.dart';
 
 class LogsPage extends ConsumerStatefulWidget {
@@ -17,9 +18,11 @@ class _LogsPageState extends ConsumerState<LogsPage> {
   Timer? _timer;
 
   Future<List<String>> fetchLogs() async {
-    final response = await http.get(
-      Uri.parse('http://app.autoescolaonline.net/api/logs'),
-    );
+    final response = await http
+        .get(Uri.parse('http://app.autoescolaonline.net/api/logs'), headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': SecretKeys.appSiteKey
+    });
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -35,7 +38,7 @@ class _LogsPageState extends ConsumerState<LogsPage> {
     _loadLogs();
 
     // Atualiza a cada 5 segundos
-    _timer = Timer.periodic(Duration(seconds: 5), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (_) {
       _loadLogs();
     });
   }

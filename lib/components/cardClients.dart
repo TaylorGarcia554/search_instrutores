@@ -169,11 +169,17 @@ class CardClients extends ConsumerWidget {
                                         child: const Text('Confirmar',
                                             style:
                                                 TextStyle(color: Colors.white)),
-                                        onPressed: () {
-                                          ref
+                                        onPressed: () async {
+                                          await ref
                                               .read(searchProvider.notifier)
                                               .atualizarStatusProcessamento(
                                                   compra.id, 2);
+
+                                          ref
+                                              .refresh(searchProvider)
+                                              .buscarProcessosIniciadosStream(
+                                                  const Duration(seconds: 1));
+
                                           Navigator.of(context).pop();
                                           // print(compra.id);
                                         },

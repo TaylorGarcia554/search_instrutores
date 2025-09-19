@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import 'package:search_instrutores/keys/keys.dart';
 import 'package:search_instrutores/models/dbHelperNew.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchProvider extends ChangeNotifier {
   final String _searchQuery = '';
@@ -12,13 +15,18 @@ class SearchProvider extends ChangeNotifier {
 
   static const baseUrl = 'http://app.autoescolaonline.net/api';
 
+  static const headers = {
+    'Content-Type': 'application/json',
+    'X-API-KEY': SecretKeys.appSiteKey
+  };
+
   // -------------------------- API NOVA --------------------------
 
   Future<List<Map<String, dynamic>>> buscarPorTermoNovo(String filtro) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/clientes/buscar/email?email=$filtro'),
-      );
+          Uri.parse('$baseUrl/clientes/buscar/email?email=$filtro'),
+          headers: headers);
 
       log('Buscando clientes com filtro: $filtro');
       log('URL: ${response.request?.url}');
@@ -47,7 +55,7 @@ class SearchProvider extends ChangeNotifier {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/cc/$clienteId'), // seu endpoint Laravel
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
 
       log('Buscando compras do cliente $clienteId');
@@ -70,9 +78,18 @@ class SearchProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> buscarProdutos(int clientId) async {
-    return await DBApiHelper.buscarProdutos(
-        clientId); // TODO: Trocar para fazer uma requisicao HTTP
+  Future<String> buscarProdutos(int produtoId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final cache = prefs.getString('produto_$produtoId');
+    if (cache != null) return cache;
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/produtos/$produtoId'),
+      headers: headers,
+    );
+    final data = jsonDecode(response.body);
+    await prefs.setString('produto_$produtoId', data['nome']);
+    return data['nome'];
   }
 
   Future<Map<String, dynamic>?> buscarCliente(int id) async {
@@ -94,7 +111,7 @@ class SearchProvider extends ChangeNotifier {
     // 1️⃣ Verificar se já existe cliente com este email
     final verificaResponse = await http.get(
       Uri.parse('$baseUrl/clientes/buscar/email?email=$email'),
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
     );
 
     if (verificaResponse.statusCode == 200) {
@@ -169,7 +186,7 @@ class SearchProvider extends ChangeNotifier {
       Map<String, dynamic> cliente) async {
     final response = await http.put(
       Uri.parse('$baseUrl/clientes/${cliente['id']}'),
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: json.encode(cliente),
     );
 
@@ -224,7 +241,7 @@ class SearchProvider extends ChangeNotifier {
 
     final response = await http.post(
       Uri.parse('$baseUrl/compras'),
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: json.encode(venda),
     );
 
@@ -254,7 +271,7 @@ class SearchProvider extends ChangeNotifier {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/compraprocessamento'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: json.encode(processo),
       );
 
@@ -277,7 +294,7 @@ class SearchProvider extends ChangeNotifier {
       try {
         final response = await http.get(
           Uri.parse('$baseUrl/compraprocessamento'),
-          headers: {'Content-Type': 'application/json'},
+          headers: headers,
         );
 
         if (response.statusCode == 200) {
@@ -299,7 +316,7 @@ class SearchProvider extends ChangeNotifier {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/valortotal'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
@@ -323,7 +340,7 @@ class SearchProvider extends ChangeNotifier {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/clientesnovos?tipo=total'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
@@ -354,7 +371,7 @@ class SearchProvider extends ChangeNotifier {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/clientespassados'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
@@ -376,7 +393,7 @@ class SearchProvider extends ChangeNotifier {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/valortotal12meses'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
@@ -394,11 +411,8 @@ class SearchProvider extends ChangeNotifier {
   }
 
   // Funcao que atualiza o status do processamento
-  Future<void> atualizarStatusProcessamento(
-    int processamentoId,
-    int status,
-    {DateTime? dataFim}
-  ) async {
+  Future<void> atualizarStatusProcessamento(int processamentoId, int status,
+      {DateTime? dataFim}) async {
     final atualizacao = {
       'estados_id': status,
       'data_fim': dataFim?.toIso8601String(),
@@ -407,7 +421,7 @@ class SearchProvider extends ChangeNotifier {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/compraprocessamento/$processamentoId'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: json.encode(atualizacao),
       );
 
@@ -429,7 +443,7 @@ class SearchProvider extends ChangeNotifier {
     try {
       final response = await http.put(
         Uri.parse('$baseUrl/compras/$vendaId'),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: json.encode(dadosAtualizados),
       );
 

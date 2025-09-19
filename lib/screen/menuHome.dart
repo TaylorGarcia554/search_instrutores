@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:search_instrutores/components/botaoSearch.dart';
 // import 'package:search_instrutores/components/inputs.dart';
 import 'package:search_instrutores/models/cliente.dart';
@@ -189,7 +190,7 @@ class _MenuhomeState extends ConsumerState<Menuhome> {
             2 => const NewClient(),
             3 => SearchClientsScreen(),
             4 => const ConfigScreen(),
-            5 => Atualizacoesscreen(),
+            5 => const Atualizacoesscreen(),
             _ => const HomeScreen()
           }),
         ],

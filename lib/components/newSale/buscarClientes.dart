@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:search_instrutores/keys/keys.dart';
 import 'package:search_instrutores/utils/cor.dart';
 
 class Cliente {
@@ -68,6 +69,10 @@ class _CampoBuscaClienteState extends State<CampoBuscaCliente> {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/clientes/buscar/email?email=$filtro'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': SecretKeys.appSiteKey
+        },
       );
       log('Buscando clientes com filtro: $filtro');
       log('URL: ${response.request?.url}');

@@ -51,7 +51,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
 
-    _timer = Timer.periodic(const Duration(seconds: 10), (_) async {
+    _timer = Timer.periodic(const Duration(seconds: 20), (_) async {
       if (!mounted) return;
 
       final clientes =
